@@ -413,6 +413,8 @@ def GenFile(iname):
                     if (SyllableCount(re.sub("(es|ed|ing)$", "",stripped.lower())) >= 3):
                         complex_words += 1
 
+            print stripped
+            print SyllableCount(re.sub("(es|ed|ing)$","",stripped.lower()))
             syllable_count += SyllableCount(re.sub("(es|ed|ing)$","",stripped.lower()))
 
         word_count.append(wc)
@@ -441,7 +443,7 @@ def GenFile(iname):
     utime = "%d-%d-%d %d:%d:%d" % (d.year,d.month,d.day,d.hour,d.minute,d.second)
 
     # Calculate Gunning Fog Index
-    gfi = 0.4*(total_word_count/total_sentences + 100*complex_words/total_word_count)
+    gfi = 0.4*(float(total_word_count)/float(total_sentences) + 100*float(complex_words)/float(total_word_count))
 
     # Calculate Flesch-Kincaid Readability Test
     fkr = 206.835 - 1.015*(float(total_word_count)/float(total_sentences)) - 84.6*(float(syllable_count)/float(total_word_count))
