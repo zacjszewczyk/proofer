@@ -34,11 +34,10 @@
                     if (document.hasFocus()) {
                         // console.log(document.hasFocus()+": "+Date.now()); // DEBUG
                     }
-                    await sleep(5000);
+                    await sleep(1000);
                     if (!document.hasFocus()) {
                         // console.log("Reloading..."+Date.now()) // DEBUG
-                        
-                        // location.reload();
+                        location.reload();
                     }
                 }
             }
@@ -141,7 +140,7 @@
             }
         </style>
     </head>
-    <body style="opacity:.8;background-color:#F6F6F6;font-family:'Roboto',sans-serif;font-size:13pt;line-height:200%;display:none;" id="{{ BODYID }}">
+    <body style="opacity:0.8;background-color:#F6F6F6;font-family:'Roboto',sans-serif;font-size:13pt;line-height:200%;" id="{{ BODYID }}">
         <header style="text-align:center;font-size:150%;max-width:75em;margin:0 auto;"><!--BLOCK HEADER--></header>
         <nav style="text-align:center;margin:10% 5%;font-size:15pt;line-height:200%;">
             <a id="home_link" href="/">Home</a>
@@ -167,9 +166,9 @@
                     <p class="tooltip">Overused phrases: <span>%d</span><span class="tooltiptext"><a target="blank_" href="http://www.plainenglish.co.uk/the-a-z-of-alternative-words.html">Plain English Campaign</a></span></p>
                     <p>Repeated words: <span>%d</span></p>
                     <p class="tooltip">Words to avoid: <span>%d</span><span class="tooltiptext">"Be" verbs, and adverbs.</span></p>
-                    <p class="tooltip">Fog index: <span>%2.2f</span><span class="tooltiptext">The <a target="blank_" href="https://en.wikipedia.org/wiki/Gunning_fog_index">Gunning Fog Index</a> estimates the years of formal education needed to understand the text on a first reading.</span></p>
-                    <p class="tooltip">Reading ease: <span>%s</span><span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid reading ease</a>: higher scores indicate material that is easier to read; lower numbers indicate difficulty.</span></p>
-                    <p class="tooltip">Grade level: <span>%3.2f</span><span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid grade level</a>: estimates the number of years of education generally required to understand this text.</span></p>
+                    <p class="tooltip">Fog index: <span>%2.2f</span>&#8595;<span class="tooltiptext">The <a target="blank_" href="https://en.wikipedia.org/wiki/Gunning_fog_index">Gunning Fog Index</a> estimates the years of formal education needed to understand the text on a first reading.</span></p>
+                    <p class="tooltip">Reading ease: <span>%s</span>&#x2191;<span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid reading ease</a>: higher scores indicate material that is easier to read; lower numbers indicate difficulty.</span></p>
+                    <p class="tooltip">Grade level: <span>%3.2f</span>&#8595;<span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid grade level</a>: estimates the number of years of education generally required to understand this text.</span></p>
                 </div>
             </section>
         </main>
