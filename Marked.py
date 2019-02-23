@@ -382,7 +382,7 @@ def GenFile(iname):
 
         if (not line.startswith("* ")):
             # Write the paragraph stats div to the output file, then the parsed line.
-            o_fd.write("<div class='floating_stats'><div>Word count: %d</div><div>Overused phrase: %d</div><div>Repeated: %d; Avoid: %d</div></div>\n" % (word_count[-1], overused_words, repeated_words, avoid_words))
+            o_fd.write("<div class='floating_stats'><div>Words: %d. Sentences: %d</div><div>Overused phrase: %d</div><div>Repeated: %d; Avoid: %d</div></div>\n" % (word_count[-1], (len(re.findall("\.[^\w]",line))+len(re.findall("[?!]",line))) or 1, overused_words, repeated_words, avoid_words))
         o_fd.write(Markdown(line)+"\n")
 
     # Close the source file
