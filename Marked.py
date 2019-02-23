@@ -289,6 +289,7 @@ def Markdown(line):
 # - iname: Name of content file. (String)
 def GenFile(iname):
     # Instantiate document statistics
+    #   fk_wc is a special word count for the Flesch-Kincaid readability test
     #   word_count is a by-paragraph word count
     #   total_sentences is a count of all sentences in document
     #   total_word_count is the word count for the entire document
@@ -298,6 +299,7 @@ def GenFile(iname):
     #   total_avoid_words is the ocunt of words to avoid in the document
     #   complex_words is a running count of words with over three syllables
     #   syllable_count is a running cound of syllables in the document
+    fk_wc = 0
     word_count = []
     total_sentences = 0
     total_word_count = 0
@@ -333,6 +335,8 @@ def GenFile(iname):
 
     # Iterate over each line in the file
     for line in iter(fd.readline, ""):
+        fk_wc += line.count(" ")+1
+
         # Save a "backup" of the line, for searching a sanitized version of it
         backup = line
         
@@ -413,8 +417,8 @@ def GenFile(iname):
                     if (SyllableCount(re.sub("(es|ed|ing)$", "",stripped.lower())) >= 3):
                         complex_words += 1
 
-            print stripped
-            print SyllableCount(re.sub("(es|ed|ing)$","",stripped.lower()))
+            # print stripped
+            # print SyllableCount(re.sub("(es|ed|ing)$","",stripped.lower()))
             syllable_count += SyllableCount(re.sub("(es|ed|ing)$","",stripped.lower()))
 
         word_count.append(wc)
@@ -443,13 +447,19 @@ def GenFile(iname):
     utime = "%d-%d-%d %d:%d:%d" % (d.year,d.month,d.day,d.hour,d.minute,d.second)
 
     # Calculate Gunning Fog Index
-    gfi = 0.4*(float(total_word_count)/float(total_sentences) + 100*float(complex_words)/float(total_word_count))
+    # estimates the years of formal education needed to understand the text on a first reading.
+    gfi = 0.4*(float(total_word_count)/float(total_sentences) + 100.0*float(complex_words)/float(total_word_count))
 
     # Calculate Flesch-Kincaid Readability Test
-    fkr = 206.835 - 1.015*(float(total_word_count)/float(total_sentences)) - 84.6*(float(syllable_count)/float(total_word_count))
+    # higher scores indicate material that is easier to read; lower numbers indicate difficulty.
+    fkr = 206.835 - (1.015*(float(fk_wc)/float(total_sentences)) + 84.6*(float(syllable_count)/float(fk_wc)))
+
+    # Calculate the Flesch-Kincaid Grade level:
+    # the number of years of education generally required to understand this text.
+    fgl = 0.39 * float(total_word_count)/float(total_sentences) + 11.8 * float(syllable_count)/float(total_word_count) - 15.59
 
     # Write the closing HTML to the output file, with document stats. Close it.
-    o_fd.write(template[1] % (utime, utime, total_word_count, total_sentences, len(word_count), total_word_count/len(word_count), total_overused_words, total_repeated_words, total_avoid_words, gfi, fkr))
+    o_fd.write(template[1] % (utime, utime, total_word_count, total_sentences, len(word_count), total_word_count/len(word_count), total_overused_words, total_repeated_words, total_avoid_words, gfi, fkr, fgl))
     o_fd.close()
 
 if (__name__ == "__main__"):
