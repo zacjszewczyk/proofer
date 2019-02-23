@@ -215,12 +215,12 @@ def Markdown(line):
             line = "<blockquote>"+line+"</blockquote>"
     # If a paragraph
     if (current == "<p>,,</p>"):
-        line = active+current.replace(",,", line.strip())
+        line = active+"\n"+current.replace(",,", line.strip())
         active = ""
     # If an unordered list
     elif (current == "<ul>,,</ul>"):
         active = "</ul>"
-        line = current.split(",,")[0].replace(">", "start='"+str(start)+"'>")+"\n<li>"+line.strip()+"</li>"
+        line = current.split(",,")[0].replace(">", " start='"+str(start)+"'>")+"\n<li>"+line.strip()+"</li>"
     # If an ordered list
     elif (current == "<ol>,,</ol>"):
         active = "</ol>"
@@ -297,14 +297,14 @@ def GenFile(iname):
     fd = open(iname, "r")
     
     # Read the title from the source file
-    title = "<h2>"+fd.readline()+"</h2>"
+    title = "<h2>"+fd.readline().strip()+"</h2>\n"
     
     # Get rid of the title separator (=) and the following blank line
     fd.readline()
     fd.readline()
 
     # Write the opening <article> tag and article title
-    o_fd.write("<article>")
+    o_fd.write("<article>\n")
     o_fd.write(title)
 
     # Iterate over each line in the file
@@ -318,7 +318,7 @@ def GenFile(iname):
 
         # Count the occurences of word separating characters, " " and "-", and
         # add 1 to get the total word count
-        word_count.append(line.count(" ")+line.count("-")+1)
+        word_count.append(line.count(" ")+line.count("--")+len(re.findall(r"\w-\w", line))+1)
         
         # Instantiate paragraph-specific statistics
         overused_words = 0 # Number of overused words
@@ -380,9 +380,10 @@ def GenFile(iname):
                 avoid_words += 1
                 total_avoid_words += 1
 
-        # Write the paragraph stats div to the output file, then the parsed line.
-        o_fd.write("<div class='floating_stats'><div>Word count: %d</div><div>Overused phrase: %d</div><div>Repeated: %d; Avoid: %d</div></div>" % (word_count[-1], overused_words, repeated_words, avoid_words))
-        o_fd.write(Markdown(line))
+        if (not line.startswith("* ")):
+            # Write the paragraph stats div to the output file, then the parsed line.
+            o_fd.write("<div class='floating_stats'><div>Word count: %d</div><div>Overused phrase: %d</div><div>Repeated: %d; Avoid: %d</div></div>\n" % (word_count[-1], overused_words, repeated_words, avoid_words))
+        o_fd.write(Markdown(line)+"\n")
 
     # Close the source file
     fd.close()
