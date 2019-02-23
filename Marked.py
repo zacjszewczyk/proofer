@@ -256,7 +256,7 @@ def Markdown(line):
         line = current.split(",,")[0]+"\n<p>"+line[2:].strip()+"</p>"
     # If the continuation of a blockquote
     elif (current == "<bqt>,,</bqt>"):
-        line = "<p>"+line.strip().replace("> ", "")+"</p>"
+        line = "<p>"+line.strip().replace("> ", "", 1)+"</p>"
     # If an element following a blockquote
     elif ((current != "<bqt>,,</bqt>") and ((second == "<bqt>,,</bqt>") or (second == "<blockquote>,,</blockquote>"))):
         line = line.strip().replace("> ", "")+"</blockquote>\n"
@@ -339,12 +339,9 @@ def GenFile(iname):
         # If we're looking at an empty line, just skip over it; else continue
         if (line.count(" ") == 0):
             continue
-
-        # Count the occurences of word separating characters, " " and "-", and
-        # add 1 to get the total word count
-        word_count.append(line.count(" ")+line.count("--")+len(re.findall(r"\w-\w", line))+1)
         
         # Instantiate paragraph-specific statistics
+        wc = 0 # Word count for current paragraph
         overused_words = 0 # Number of overused words
         repeated_words = 0 # Number of repeated words
         avoid_words = 0 # Number of words to avoid
@@ -372,7 +369,7 @@ def GenFile(iname):
         # of the same word in a sentnece, highlight all occurences. Also check for be
         # verbs as well, and highlight them accordingly.
         # for word in backup.split(" "):
-        for word in re.split("[\s(--)]", backup):
+        for word in re.split("(\s|--)", backup):
 
             # This strips any special characters from the word, such as punctuation.
             stripped = re.sub(r"^[\W]+", "", word.strip())
@@ -381,8 +378,7 @@ def GenFile(iname):
             if (len(stripped) == 0):
                 continue
 
-            # print "Word: "+word.strip()
-            # print "Stripped: "+stripped
+            wc += 1
 
             # First check if we have decided to exclude the word, as in the case of "the",
             # "of", "a", "for", or similar words. If true, skip the word; else, proceed.
@@ -413,6 +409,8 @@ def GenFile(iname):
                 complex_words += 1
 
             syllable_count += SyllableCount(re.sub("(es|ed|ing)$", "",stripped.lower()))
+
+        word_count.append(wc)
 
         # Count sentences in paragraph, and add that number to the running sentence total
         sentences = (len(re.findall("\.[^\w]",line))+len(re.findall("[?!]",line))) or 1
