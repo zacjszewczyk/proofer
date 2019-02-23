@@ -32,11 +32,12 @@
             async function livePage() {
                 for (;;) {
                     if (document.hasFocus()) {
-                        // console.log(document.hasFocus()+": "+Date.now());
+                        // console.log(document.hasFocus()+": "+Date.now()); // DEBUG
                     }
                     await sleep(5000);
                     if (!document.hasFocus()) {
-                        // console.log("Reloading..."+Date.now())
+                        // console.log("Reloading..."+Date.now()) // DEBUG
+                        
                         // location.reload();
                     }
                 }
@@ -58,6 +59,8 @@
             #document_stats h4 {
                 font-size: 14pt;
                 text-transform: uppercase;
+                margin-bottom: 5px;
+                line-height: 100%;
             }
             .floating_stats div, #document_stats p {
                 line-height: 150%;
@@ -78,6 +81,13 @@
             article>p {
                 min-height: 6em;
             }
+            #document_stats div:first-of-type {
+                text-align: center;
+                font-size: 85%;
+                margin-bottom: 15px;
+                line-height: 125%;
+                opacity:.8;
+            }
         </style>
     </head>
     <body style="opacity:.8;background-color:#F6F6F6;font-family:'Roboto',sans-serif;font-size:13pt;line-height:200%;display:none;" id="{{ BODYID }}">
@@ -97,10 +107,15 @@
             <section id="document_stats">
                 <h4>Document Statistics</h4>
                 <div>
+                    <time datetime="2019-2-23 9:32:4" pubdate="pubdate">Built on 2019-2-23 9:32:4</time>
+                </div>
+                <div>
                     <p>Word count: 294</p>
-                    <p>Overused word/phrase: 3</p>
+                    <p>Overused phrase: 3</p>
                     <p>Repeated words: 13</p>
                     <p>Words to avoid: 10</p>
+                    <p>Fog index: </p>
+                    <p>Readability: </p>
                 </div>
             </section>
         </main>
@@ -125,7 +140,6 @@
     </script>
     <script type="text/javascript">
         classname = document.getElementsByClassName("repeat");
-
         for (var i = 0; i < classname.length; i++) {
             classname[i].addEventListener('mouseover', mouseOver, false);
             classname[i].addEventListener('mouseout', mouseOut, false);
