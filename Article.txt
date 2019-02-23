@@ -1,12 +1,36 @@
-Article Title
-=============
+On Covering Webcams
+===================
 
-When my get-up-and-go has got up and went, I hanker for a hunk o'cheese! When I'm dancin' a hoedown and my boots kinda slow down, or anytime I'm weak in the knees. A total of nothing is important here, this is dumb. I hanker for a hunk of, a slab or slice or chunk of, a snack a day's a winner and yet won't spoil my dinner! I hanker for a hunk o' cheese! Ya-hoo!
+I'm a big fan of Joanna Stern--she was in fact just on my podcast and it was one of my favorite episodes in a while. At the end of the episode, she mentioned that she was working on a piece about webcam security for her Personal Tech column at The Wall Street Journal. That column dropped yesterday, and I found it half enlightening, half maddening.
 
-Hot dogs, Armour hot dogs. What kind of kids eat following Armour hot dogs? Fat kids, skinny kids, kids who climb on rocks. Tough kids, sissy kids, even kids with chicken pox love hot dogs, Armour hot dogs... The dogs kids love to bite!
+How secure are these tiny eyes into our private lives? The bad news is, it was possible for Mr. Heid to get into my Windows 10 laptop's webcam and, from there, my entire home network. He also eventually cracked my MacBook Air. The good news is that both operating systems were initially able to thwart the hacker. It took me performing some intentionally careless things for him to "succeed."
 
-What you are about to see is real; the litigants on the screen are not actors. They are genuine citizens who, having filed their claims in a real small claims court, have been persuaded to drop their suits there and have them settled here, in this forum... the People's Court.
+Key words there: intentionally careless.
 
-Space, the final frontier. These are the voyages of the starship Enterprise. Its five year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before!
+Here's how he got into her Windows 10 laptop--admittedly using only "off-the-shelf hacking tools":
 
-I bet we been together for a million years, And I bet we'll be together for a million more. Oh, It's like I started breathing on the night we kissed, and I can't remember what I ever did before. What would we do baby, without us? What would we do baby, without us? Buy me this thing, you purchase person, you. And there ain't no nothing we can't love each other through. What would we do baby, without us? Sha la la la.
+When I opened the attached Word doc, Microsoft 's built-in, free anti-virus software, Windows Defender, immediately flagged it. When I clicked the link to the "reel," the file that began downloading was identified as a virus and deleted. The system worked, but I wanted to see what would happen if I were someone who didn't have anti-virus turned on in the first place, or who turned it off because it got annoying.
+
+Here's how the security expert got into her MacBook (again, using only "off-the-shelf hacking tools"):
+
+Hacking a 2015 MacBook Air running the latest MacOS version, Mojave, also required a multistep process (and some missteps by the "victim"). This time the malware was embedded in an .odt document, an open-source file format.
+
+To open it, I downloaded LibreOffice. The free version of the popular open-source office suite isn't in the Mac App Store, however, so I had to disable the Mac security setting that prevents unverified developer software installation.
+
+Once I installed LibreOffice, I turned off its macro security setting, per the hacker's instructions. There are scenarios where you might do this--say, for instance, because your company used a specially designed inventory spreadsheet or sales form--but for most people, it's a bad idea.
+
+I did get a pop-up asking for camera access, and I clicked OK, like we might do when we're in a rush. Because Mr. Heid was only snapping stills, the webcam LED only lit up for a second.
+
+So she had to download LibreOffice (weird), disable LibreOffice's macro security (really weird), and then still had to grant explicit permission for LibreOffice to access the camera. If you open a document that prompts you for access to the camera, aren't you expecting it to be able to access your camera?
+
+Stern's advice to Mac users:
+
+Installing those nagging security and OS updates are a must--on your phone, laptop, router, thermostat, really anything that connects to the internet. They include the latest attempts to patch the holes that hackers use to get in. Mac users should install Malwarebytes or other malware-fighting software--and don't turn off any security features just because someone asks you to.
+
+I've long argued that third-party anti-malware software on the Mac causes more problems than it solves. If someone is willing to ignore the warning from MacOS that an app isn't from a verified developer, and is willing to disable the security settings in that app at the behest of a social engineering hacker, why wouldn't that same person be gullible enough to also disable their anti-malware software?
+
+Stern also claims she's now using a physical stick-on camera cover. But why? In both cases--Mac and PC--the built-in system software did its job and issued clear warnings that she had to ignore for the attack to proceed. And even then--on both Mac and PC--the light next to the camera went on when it was in use.
+
+There's nothing in Stern's story that makes me worry in the least bit about the security of my Mac webcams, and I don't see anything that should worry someone running Windows 10 with Windows Defender (Microsoft's built-in security software). The path to compromising Stern's cameras was like a test of your home security that starts with a request that you leave your door unlocked and turn off your alarm system.
+
+I have never understood the mass paranoia over laptop webcams--which have in-use indicator lights, which I've seen no evidence can be circumvented on Macs from the last decade--and the complete lack of similar paranoia over microphones, which cannot be blocked by a piece of tape and which have no in-use indicator lights. And I don't see anyone taping over the cameras on their phones. This story is only going to feed that paranoia, because the takeaway is going to be "The Wall Street Journal says you should cover up your webcam."

@@ -42,9 +42,9 @@ overlap         = ['an absence of', 'absence of', 'abundance', 'accede to', 'acc
 ####
 
 # A list of be verbs to avoid
-be_verbs        = ["am", "is", "are", "was", "were", "be", "being", "been"]
+be_verbs        = ["am", "is", "are", "was", "were", "be", "being", "been", "you're", "they're"]
 # A list of words to exclude from word repetition highlighting
-exclude         = ["the", "a", "or", "my", "and", "to", "we", "I", "for", "i", "what", "of"] + be_verbs
+exclude         = ["the", "a", "or", "my", "and", "to", "we", "I", "for", "i", "what", "of", "that", "it", "you", "your", "have", "which"] + be_verbs
 
 # Global variables for pasring Markdown
 types = ["", "", ""]
@@ -329,7 +329,7 @@ def GenFile(iname):
         # paragraph case insensitively. If a match is found, increment the count
         # of overused words in the paragraph and document, then highlight it.
         for word in overlap:
-            m = re.search("\s"+word+"\s", line, re.IGNORECASE)
+            m = re.search("[^\w]"+word+"[^\w]", line, re.IGNORECASE)
             if (m):
                 overused_words += line.lower().count(word)
                 total_overused_words += overused_words
@@ -349,7 +349,7 @@ def GenFile(iname):
         for word in backup.split(" "):
             
             # This strips any special characters from the word, such as punctuation.
-            stripped = re.compile('[\W_]+').sub('', word)
+            stripped = re.compile('[\W_]+').sub('', word.replace("'s", ""))
 
             # First check if we have decided to exclude the word, as in the case of "the",
             # "of", "a", "for", or similar words. If true, skip the word; else, proceed.
@@ -371,9 +371,8 @@ def GenFile(iname):
 
             # Check for be verbs in the document. If found, highlight them and increment
             # the be verb count.
-            if (stripped.lower() in be_verbs):
-                line = line.replace(" "+stripped+" ", " <span class='avoid'>"+stripped+"</span> ")
-                # line = re.sub("([^\w])"+stripped+"([^\w])", "\1<span class='avoid'>"+stripped+"</span>\2", line)
+            if (stripped.lower() in be_verbs) or (stripped.lower().endswith("ly")):
+                line = re.sub(r"([^\w])"+stripped+r"([^\w])", r"\1<span class='avoid'>"+stripped+r"</span>\2", line)
                 avoid_words += 1
                 total_avoid_words += 1
 
