@@ -1,28 +1,5 @@
 #!/usr/bin/env python
 
-# Replacing Marked Feature Roadmap and Notes
-# Key features:
-# * [X] Monitor for changes to text file. On change, update HTML file that reloads every second unless the document is in focus (https://forum.sublimetext.com/t/best-way-to-live-preview-code/20885/6)
-# * [X] Visualize word repetition
-# * [X] Highlight complex words
-# * [X] Highlight words to avoid
-# * [X] Word count for document, and each paragraph
-# * [ ] Fog index (https://en.wikipedia.org/wiki/Gunning_fog_index)
-# * [ ] Flesch-Kincaid readability test (https://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests)
-#
-# This will be key: https://stackoverflow.com/questions/46759492/syllable-count-in-python
-#
-# Design:
-# * [X] Article down middle of page
-# * [X] Left side: paragraph statistics (number of words, number of complex words, words to avoid )
-# * [ ]Right side:
-#   * [ ] Floating document statistics
-#     * [X] Last updated
-#     * [X] Word count
-#     * [X] Number complex words
-#     * [ ] Fog Index (color based on range)
-#     * [ ] Readability (color based on range)
-
 # Import modules
 import sys
 import os
