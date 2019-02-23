@@ -3,23 +3,23 @@ On Covering Webcams
 
 I'm a big fan of Joanna Stern--she was in fact just on my podcast and it was one of my favorite episodes in a while. At the end of the episode, she mentioned that she was working on a piece about webcam security for her Personal Tech column at The Wall Street Journal. That column dropped yesterday, and I found it half enlightening, half maddening.
 
-How secure are these tiny eyes into our private lives? The bad news is, it was possible for Mr. Heid to get into my Windows 10 laptop's webcam and, from there, my entire home network. He also eventually cracked my MacBook Air. The good news is that both operating systems were initially able to thwart the hacker. It took me performing some intentionally careless things for him to "succeed."
+> How secure are these tiny eyes into our private lives? The bad news is, it was possible for Mr. Heid to get into my Windows 10 laptop's webcam and, from there, my entire home network. He also eventually cracked my MacBook Air. The good news is that both operating systems were initially able to thwart the hacker. It took me performing some intentionally careless things for him to "succeed."
 
 Key words there: intentionally careless.
 
 Here's how he got into her Windows 10 laptop--admittedly using only "off-the-shelf hacking tools":
 
-When I opened the attached Word doc, Microsoft 's built-in, free anti-virus software, Windows Defender, immediately flagged it. When I clicked the link to the "reel," the file that began downloading was identified as a virus and deleted. The system worked, but I wanted to see what would happen if I were someone who didn't have anti-virus turned on in the first place, or who turned it off because it got annoying.
+> When I opened the attached Word doc, Microsoft's built-in, free anti-virus software, Windows Defender, immediately flagged it. When I clicked the link to the "reel," the file that began downloading was identified as a virus and deleted. The system worked, but I wanted to see what would happen if I were someone who didn’t have anti-virus turned on in the first place, or who turned it off because it got annoying.  
 
-Here's how the security expert got into her MacBook (again, using only "off-the-shelf hacking tools"):
+Here's how the security expert got into her MacBook (again, using only "off-the-shelf hacking tools"):  
 
-Hacking a 2015 MacBook Air running the latest MacOS version, Mojave, also required a multistep process (and some missteps by the "victim"). This time the malware was embedded in an .odt document, an open-source file format.
+> Hacking a 2015 MacBook Air running the latest MacOS version, Mojave, also required a multistep process (and some missteps by the "victim"). This time the malware was embedded in an .odt document, an open-source file format.  
 
-To open it, I downloaded LibreOffice. The free version of the popular open-source office suite isn't in the Mac App Store, however, so I had to disable the Mac security setting that prevents unverified developer software installation.
+> To open it, I downloaded LibreOffice. The free version of the popular open-source office suite isn't in the Mac App Store, however, so I had to disable the Mac security setting that prevents unverified developer software installation.
 
-Once I installed LibreOffice, I turned off its macro security setting, per the hacker's instructions. There are scenarios where you might do this--say, for instance, because your company used a specially designed inventory spreadsheet or sales form--but for most people, it's a bad idea.
+> Once I installed LibreOffice, I turned off its macro security setting, per the hacker's instructions. There are scenarios where you might do this--say, for instance, because your company used a specially designed inventory spreadsheet or sales form--but for most people, it's a bad idea.
 
-I did get a pop-up asking for camera access, and I clicked OK, like we might do when we're in a rush. Because Mr. Heid was only snapping stills, the webcam LED only lit up for a second.
+> I did get a pop-up asking for camera access, and I clicked OK, like we might do when we're in a rush. Because Mr. Heid was only snapping stills, the webcam LED only lit up for a second.
 
 So she had to download LibreOffice (weird), disable LibreOffice's macro security (really weird), and then still had to grant explicit permission for LibreOffice to access the camera. If you open a document that prompts you for access to the camera, aren't you expecting it to be able to access your camera?
 

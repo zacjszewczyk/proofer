@@ -85,7 +85,7 @@ def Markdown(line):
         types.append("<div class=\"footnote\">,,</div>")
     # Blockquotes
     elif (re.match(">|\s{4}", line) != None):
-        if ((types[-1] == "<blockquote>,,</blockquote>") or (types[-2] == "<blockquote>,,</blockquote>") or (types[-3] == "<blockquote>,,</blockquote>") or (types[-1] == "<bqt>,,</bqt>") or (types[-2] == "<bqt>,,</bqt>") or (types[-3] == "<bqt>,,</bqt>")):
+        if ((types[-1] == "<blockquote>,,</blockquote>") or (types[-1] == "<bqt>,,</bqt>")):
             types.append("<bqt>,,</bqt>")
         else:
             types.append("<blockquote>,,</blockquote>")
@@ -215,7 +215,8 @@ def Markdown(line):
             line = "<blockquote>"+line+"</blockquote>"
     # If a paragraph
     if (current == "<p>,,</p>"):
-        line = current.replace(",,", line.strip())
+        line = active+current.replace(",,", line.strip())
+        active = ""
     # If an unordered list
     elif (current == "<ul>,,</ul>"):
         active = "</ul>"
@@ -234,7 +235,7 @@ def Markdown(line):
     # If a blockquote
     elif (current == "<blockquote>,,</blockquote>"):
         active = "</blockquote>"
-        line = current.split(",,")[0]+"\n<p>"+line.strip()+"</p>"
+        line = current.split(",,")[0]+"\n<p>"+line[2:].strip()+"</p>"
     # If the continuation of a blockquote
     elif (current == "<bqt>,,</bqt>"):
         line = "<p>"+line.strip().replace("> ", "")+"</p>"
@@ -350,6 +351,9 @@ def GenFile(iname):
             
             # This strips any special characters from the word, such as punctuation.
             stripped = re.compile('[\W_]+').sub('', word.replace("'s", ""))
+            
+            if (len(stripped) == 0):
+                continue
 
             # First check if we have decided to exclude the word, as in the case of "the",
             # "of", "a", "for", or similar words. If true, skip the word; else, proceed.
