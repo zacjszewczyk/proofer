@@ -405,10 +405,15 @@ def GenFile(iname):
                 avoid_words += 1
                 total_avoid_words += 1
 
-            if (SyllableCount(re.sub("(es|ed|ing)$", "",stripped.lower())) >= 3) and not (re.search("^[A-Z]", stripped)):
-                complex_words += 1
+            # To calculate the number of complex words, first exclude proper nouns. Next,
+            # exclude compound words, then strip -es, -ed, and -ing endings. Finally, if
+            # the number of syllables in the remaining word is >= 3, found a complex word.
+            if (not (re.search("^[A-Z]", stripped))):
+                if ("-" not in stripped):
+                    if (SyllableCount(re.sub("(es|ed|ing)$", "",stripped.lower())) >= 3):
+                        complex_words += 1
 
-            syllable_count += SyllableCount(re.sub("(es|ed|ing)$", "",stripped.lower()))
+            syllable_count += SyllableCount(re.sub("(es|ed|ing)$","",stripped.lower()))
 
         word_count.append(wc)
 
