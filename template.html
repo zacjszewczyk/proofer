@@ -91,6 +91,9 @@
                 line-height: 125%;
                 opacity:.8;
             }
+            #document_stats span {
+                font-weight: bold;
+            }
         </style>
     </head>
     <body style="opacity:.8;background-color:#F6F6F6;font-family:'Roboto',sans-serif;font-size:13pt;line-height:200%;display:none;" id="{{ BODYID }}">
@@ -102,7 +105,7 @@
             <a id="archives_link" href="/archives">Post Archives</a>
             <a id="projects_link" href="/projects">Projects</a>
         </nav>
-        <main style="max-width:65em;margin:0 auto;margin-bottom:100px;">
+        <main style="max-width:50em;margin:0 auto;margin-bottom:100px;">
             <section id="content_section">
                 <!--Divider-->
             </section>
@@ -112,10 +115,12 @@
                     <time datetime="%s" pubdate="pubdate">Built on %s</time>
                 </div>
                 <div>
-                    <p>Word count: %d</p>
-                    <p>Overused phrase: %d</p>
-                    <p>Repeated words: %d</p>
-                    <p>Words to avoid: %d</p>
+                    <p>Words: <span>%d</span></p>
+                    <p>Paragraphs: <span>%d</span></p>
+                    <p>Avg. words/paragraph: <span>%d</span></p>
+                    <p>Overused phrase: <span>%d</span></p>
+                    <p>Repeated words: <span>%d</span></p>
+                    <p>Words to avoid: <span>%d</span></p>
                     <p>Fog index: </p>
                     <p>Readability: </p>
                 </div>

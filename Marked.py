@@ -395,7 +395,7 @@ def GenFile(iname):
     utime = "%d-%d-%d %d:%d:%d" % (d.year,d.month,d.day,d.hour,d.minute,d.second)
 
     # Write the closing HTML to the output file, with document stats. Close it.
-    o_fd.write(template[1] % (utime, utime, total_word_count, total_overused_words, total_repeated_words, total_avoid_words))
+    o_fd.write(template[1] % (utime, utime, total_word_count, len(word_count), total_word_count/len(word_count), total_overused_words, total_repeated_words, total_avoid_words))
     o_fd.close()
 
 if (__name__ == "__main__"):
