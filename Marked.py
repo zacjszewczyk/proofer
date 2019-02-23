@@ -44,7 +44,25 @@ overlap         = ['an absence of', 'absence of', 'abundance', 'accede to', 'acc
 # A list of be verbs to avoid
 be_verbs        = ["am", "is", "are", "was", "were", "be", "being", "been", "you're", "they're"]
 # A list of words to exclude from word repetition highlighting
-exclude         = ["the", "a", "or", "my", "and", "to", "we", "I", "for", "i", "what", "of", "that", "it", "you", "your", "have", "which"] + be_verbs
+exclude         = be_verbs+["the", "a", "or", "my", "and", "to", "we", "I", "for", "i", "what", "of", "that", "he", "she", "it", "you", "your", "have", "which", "in", "on"]
+
+# Method: SyllableCount
+# Purpose: Accept a word and return the number of syllables
+# Parameters: word: Word to be parsed. (String)
+def SyllableCount(word):
+    word = word.lower()
+    count = 0
+    vowels = "aeiouy"
+    if word[0] in vowels:
+        count += 1
+    for index in range(1, len(word)):
+        if word[index] in vowels and word[index - 1] not in vowels:
+            count += 1
+    if word.endswith("e"):
+        count -= 1
+    if count == 0:
+        count += 1
+    return count
 
 # Global variables for pasring Markdown
 types = ["", "", ""]
@@ -272,16 +290,22 @@ def Markdown(line):
 def GenFile(iname):
     # Instantiate document statistics
     #   word_count is a by-paragraph word count
+    #   total_sentences is a count of all sentences in document
     #   total_word_count is the word count for the entire document
     #   total_overused_words is the count of overused words
     #   total_repeated_words is the count of unique repeated words in the document,
     #       not including the individual repeats
     #   total_avoid_words is the ocunt of words to avoid in the document
+    #   complex_words is a running count of words with over three syllables
+    #   syllable_count is a running cound of syllables in the document
     word_count = []
+    total_sentences = 0
     total_word_count = 0
     total_overused_words = 0
     total_repeated_words = 0
     total_avoid_words = 0
+    complex_words = 0
+    syllable_count = 0
 
     # Open th template file, read its contents, and split them for easy access later
     template_fd = open("template.html", "r")
@@ -347,13 +371,18 @@ def GenFile(iname):
         # For each word in the sentence, count repetitions. If there are three or more
         # of the same word in a sentnece, highlight all occurences. Also check for be
         # verbs as well, and highlight them accordingly.
-        for word in backup.split(" "):
-            
+        # for word in backup.split(" "):
+        for word in re.split("[\s(--)]", backup):
+
             # This strips any special characters from the word, such as punctuation.
-            stripped = re.compile('[\W_]+').sub('', word.replace("'s", ""))
-            
+            stripped = re.sub(r"^[\W]+", "", word.strip())
+            stripped = re.sub(r"[\W]+$", "", stripped)
+
             if (len(stripped) == 0):
                 continue
+
+            # print "Word: "+word.strip()
+            # print "Stripped: "+stripped
 
             # First check if we have decided to exclude the word, as in the case of "the",
             # "of", "a", "for", or similar words. If true, skip the word; else, proceed.
@@ -373,16 +402,25 @@ def GenFile(iname):
                     repeated_words += 1
                     total_repeated_words += 1
 
-            # Check for be verbs in the document. If found, highlight them and increment
-            # the be verb count.
+            # Check for be verbs, "ly" words in the document. If found, highlight
+            # them and increment the be verb count.
             if (stripped.lower() in be_verbs) or (stripped.lower().endswith("ly")):
                 line = re.sub(r"([^\w])"+stripped+r"([^\w])", r"\1<span class='avoid'>"+stripped+r"</span>\2", line)
                 avoid_words += 1
                 total_avoid_words += 1
 
+            if (SyllableCount(re.sub("(es|ed|ing)$", "",stripped.lower())) >= 3) and not (re.search("^[A-Z]", stripped)):
+                complex_words += 1
+
+            syllable_count += SyllableCount(re.sub("(es|ed|ing)$", "",stripped.lower()))
+
+        # Count sentences in paragraph, and add that number to the running sentence total
+        sentences = (len(re.findall("\.[^\w]",line))+len(re.findall("[?!]",line))) or 1
+        total_sentences += sentences
+
         if (not line.startswith("* ")):
             # Write the paragraph stats div to the output file, then the parsed line.
-            o_fd.write("<div class='floating_stats'><div>Words: %d. Sentences: %d</div><div>Overused phrase: %d</div><div>Repeated: %d; Avoid: %d</div></div>\n" % (word_count[-1], (len(re.findall("\.[^\w]",line))+len(re.findall("[?!]",line))) or 1, overused_words, repeated_words, avoid_words))
+            o_fd.write("<div class='floating_stats'><div>Words: %d. Sentences: %d</div><div>Overused phrase: %d</div><div>Repeated: %d; Avoid: %d</div></div>\n" % (word_count[-1], sentences, overused_words, repeated_words, avoid_words))
         o_fd.write(Markdown(line)+"\n")
 
     # Close the source file
@@ -399,8 +437,14 @@ def GenFile(iname):
     d = datetime.datetime.now()
     utime = "%d-%d-%d %d:%d:%d" % (d.year,d.month,d.day,d.hour,d.minute,d.second)
 
+    # Calculate Gunning Fog Index
+    gfi = 0.4*(total_word_count/total_sentences + 100*complex_words/total_word_count)
+
+    # Calculate Flesch-Kincaid Readability Test
+    fkr = 206.835 - 1.015*(float(total_word_count)/float(total_sentences)) - 84.6*(float(syllable_count)/float(total_word_count))
+
     # Write the closing HTML to the output file, with document stats. Close it.
-    o_fd.write(template[1] % (utime, utime, total_word_count, len(word_count), total_word_count/len(word_count), total_overused_words, total_repeated_words, total_avoid_words))
+    o_fd.write(template[1] % (utime, utime, total_word_count, total_sentences, len(word_count), total_word_count/len(word_count), total_overused_words, total_repeated_words, total_avoid_words, gfi, fkr))
     o_fd.close()
 
 if (__name__ == "__main__"):
