@@ -52,42 +52,11 @@
                 right: 100px;
                 padding: 10px;
             }
-            .floating_stats {
-                position: absolute;
-                left: 150px;
-            }
             #document_stats h4 {
                 font-size: 14pt;
                 text-transform: uppercase;
                 margin-bottom: 5px;
                 line-height: 100%;
-            }
-            .floating_stats div, #document_stats p {
-                line-height: 150%;
-                margin: 0;
-                font-size: 12pt;
-            }
-            .replace, .replace .avoid {
-                background-color: #f0bdff;
-            }
-            .replace:hover {
-                background-color: #ECDEF0;
-            }
-            .repeat {
-                background-color: #ff6666;
-            }
-            .avoid {
-                background-color: #eaea1c;
-            }
-            .avoid:hover {
-                background-color: #c8c81d;
-            }
-            .replace, .repeat, .avoid {
-                border-radius: 2px;
-                padding: 2px;
-            }
-            article>p, article>blockquote p {
-                min-height: 5em;
             }
             #document_stats div:first-of-type {
                 text-align: center;
@@ -98,6 +67,53 @@
             }
             #document_stats span {
                 font-weight: bold;
+            }
+            .floating_stats {
+                position: absolute;
+                left: 150px;
+            }
+            .floating_stats div, #document_stats p {
+                line-height: 150%;
+                margin: 0;
+                font-size: 12pt;
+            }
+            .avoid {
+                background-color: #eaea1c;
+            }
+            .avoid:hover {
+                background-color: #c8c81d;
+            }
+            .replace, .replace .avoid {
+                background-color: #f0bdff;
+            }
+            .replace:hover {
+                background-color: #ECDEF0;
+            }
+            .repeat {
+                background-color: #ff6666;
+            }
+            .replace, .repeat, .avoid {
+                border-radius: 2px;
+                padding: 2px;
+            }
+            article>p, article>blockquote p {
+                min-height: 5em;
+            }
+            .tooltip .tooltiptext {
+                visibility: hidden;
+                background-color: #0f0f0f;
+                color: #fff;
+                text-align: center;
+                border-radius: 3px;
+                padding: 5px 10px;
+                position: absolute;
+                z-index: 1;
+                left:-50%;
+                margin-top:-5px;
+                font-size: 90%;
+            }
+            .tooltip:hover .tooltiptext {
+                visibility: visible;
             }
         </style>
     </head>
@@ -124,11 +140,11 @@
                     <p>Sentences: <span>%d</span></p>
                     <p>Paragraphs: <span>%d</span></p>
                     <p>Avg. words/paragraph: <span>%d</span></p>
-                    <p>Overused phrases: <span>%d</span></p>
+                    <p class="tooltip">Overused phrases: <span>%d</span><span class="tooltiptext"><a href="http://www.plainenglish.co.uk/the-a-z-of-alternative-words.html">Plain English Campaign</a></span></p>
                     <p>Repeated words: <span>%d</span></p>
-                    <p>Words to avoid: <span>%d</span></p>
-                    <p>Fog index: <span>%2.2f</span></p>
-                    <p>Readability: <span>%3.2f</span></p>
+                    <p class="tooltip">Words to avoid: <span>%d</span><span class="tooltiptext">"Be" verbs, and adverbs.</span></p>
+                    <p class="tooltip">Fog index: <span>%2.2f</span><span class="tooltiptext"><a href="https://en.wikipedia.org/wiki/Gunning_fog_index">Gunning Fog Index</a></span></p>
+                    <p class="tooltip">Readability: <span>%3.2f</span><span class="tooltiptext"><a href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid readability tests</a></span></p>
                 </div>
             </section>
         </main>
