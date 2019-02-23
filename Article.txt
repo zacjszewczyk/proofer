@@ -33,8 +33,4 @@ Stern also claims she's now using a physical stick-on camera cover. But why? In 
 
 There's nothing in Stern's story that makes me worry in the least bit about the security of my Mac webcams, and I don't see anything that should worry someone running Windows 10 with Windows Defender (Microsoft's built-in security software). The path to compromising Stern's cameras was like a test of your home security that starts with a request that you leave your door unlocked and turn off your alarm system.
 
-* Now let's have an unordered list in here.  
-* Second item.  
-* Third item.  
-
 I have never understood the mass paranoia over laptop webcams--which have in-use indicator lights, which I've seen no evidence can be circumvented on Macs from the last decade--and the complete lack of similar paranoia over microphones, which cannot be blocked by a piece of tape and which have no in-use indicator lights. And I don't see anyone taping over the cameras on their phones. This story is only going to feed that paranoia, because the takeaway is going to be "The Wall Street Journal says you should cover up your webcam."
