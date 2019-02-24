@@ -597,11 +597,13 @@ if (__name__ == "__main__"):
         n_s = [n_s.st_mtime, n_s.st_ctime]
 
         if (f_s == n_s):
-            sleep(1)
+            sleep(2)
             continue
         
         # File has changed
-        print "Building..."
+        d = datetime.datetime.now()
+        utime = "%d-%d-%d %d:%d:%d" % (d.year,d.month,d.day,d.hour,d.minute,d.second)
+        print "Building: ", utime
         GenFile(f)
 
         f_s = n_s
