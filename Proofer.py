@@ -21,7 +21,7 @@ overlap         = ['an absence of', 'absence of', 'abundance', 'accede to', 'acc
 # A list of be verbs to avoid
 be_verbs        = ["am", "is", "are", "was", "were", "be", "being", "been", "you're", "they're"]
 # A list of words to exclude from word repetition highlighting
-exclude         = be_verbs+["the", "a", "or", "my", "and", "to", "we", "I", "for", "i", "what", "of", "that", "he", "she", "it", "you", "your", "have", "which", "in", "on"]
+exclude         = be_verbs+["the", "a", "or", "my", "and", "to", "we", "I", "for", "i", "what", "of", "that", "he", "she", "it", "you", "your", "have", "which", "in", "on", "with", "would"]
 
 # Method: SyllableCount
 # Purpose: Accept a word and return the number of syllables
