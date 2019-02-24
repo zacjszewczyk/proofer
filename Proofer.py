@@ -21,7 +21,7 @@ overlap         = ['an absence of', 'absence of', 'abundance', 'accede to', 'acc
 # A list of be verbs to avoid
 be_verbs        = ["am", "is", "are", "was", "were", "be", "being", "been", "you're", "they're"]
 # A list of words to exclude from word repetition highlighting
-exclude         = be_verbs+["the", "a", "or", "my", "and", "to", "we", "I", "for", "i", "what", "of", "that", "he", "she", "it", "you", "your", "have", "which", "in", "on", "with", "would"]
+exclude         = be_verbs+["the", "a", "or", "my", "and", "to", "we", "I", "for", "i", "what", "of", "that", "he", "she", "it", "you", "your", "have", "which", "in", "on", "with", "would", "as", "had"]
 
 # Method: SyllableCount
 # Purpose: Accept a word and return the number of syllables
@@ -469,7 +469,7 @@ def GenFile(iname):
                 # replace targeted matches with uppercase letters that start a
                 # sentence, the second replace will capture all other occurences of
                 # that word that may exist throughout the document.
-                line = line.replace(m.group(0), " <span class='replace'>"+m.group(0).strip()+"</span> ")
+                line = line.replace(m.group(0), " <span class='replace'>"+m.group(0)+"</span> ")
                 if (m.group(0) != m.group(0).lower()):
                     line = line.replace(m.group(0).lower(), " <span class='replace'>"+m.group(0).lower().strip()+"</span> ")
 
@@ -529,7 +529,7 @@ def GenFile(iname):
         sentences = (len(re.findall("\.[^\w]",line))+len(re.findall("[?!]",line))) or 1
         total_sentences += sentences
 
-        if (not line.startswith("* ")):
+        if (not line.startswith("* ") and not line.startswith("#")):
             # Write the paragraph stats div to the output file, then the parsed line.
             o_fd.write("<div class='floating_stats'><div>Words: %d. Sentences: %d</div><div>Overused phrase: %d</div><div>Repeated: %d; Avoid: %d</div></div>\n" % (word_count[-1], sentences, overused_words, repeated_words, avoid_words))
         o_fd.write(Markdown(line)+"\n")
