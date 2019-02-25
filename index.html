@@ -31,11 +31,11 @@
             }
             async function livePage() {
                 for (;;) {
-                    if (document.body.hasFocus()) {
+                    if (document.hasFocus()) {
                         // console.log(document.hasFocus()+": "+Date.now()); // DEBUG
                     }
-                    await sleep(1000);
-                    if (!document.body.hasFocus()) {
+                    await sleep(5000);
+                    if (!document.hasFocus()) {
                         // console.log("Reloading..."+Date.now()) // DEBUG
                         location.reload();
                     }
@@ -158,15 +158,27 @@
 <p>I chose the 4Runner for <a href="/blog/choosing-an-adventure-rig">many reasons</a>, and in part because I could take it off-road without expensive upgrades. I needed it to do more than just take me to cool places, though: I needed it to support me once I got out there, too. Because I had set my sights on the East Coast, I focused on <a href="/blog/outfitting-my-4runner-for-adventure">gear to make that trip safer and more fun</a> first, rather than new tires, bumpers, and recovery tools. As part of that process, I built a storage system and sleeping platform in my trunk. Today I want to talk about its conception, design, and construction.</p>
 <div class='floating_stats'><div>Words: 182. Sentences: 7</div><div>Overused phrase: 0</div><div>Repeated: 0; Avoid: 0</div></div>
 
-<p>Because the 4Runner and the Tacoma use the same frame, the choice comes down to whether you prefer a climate-controlled interior or an exposed bed when building a rig. I chose the former because it would take the least work to go from showroom model to adventure vehicle. I did not have the time or resources to make a Tacoma as livable as a stock 4Runner. I still wanted some of the benefits of a pickup, though, such as plenty of storage space and room to sleep on my vehicle in a pinch. I decided I could achieve those goals with a raised platform. My design had to turn the 4Runner&#8217;s trunk and second row of seats into a flat area the size of a mid-size truck bed, with storage underneath; if I had to take passengers, it had to fold away into the trunk. A setup like this would give me the best of both worlds: the livability of an SUV with the capability of a truck, at much less than the price of building out some sort of camper shell.</p>
+<p>Because the 4Runner and the Tacoma use the same frame, the choice comes down to whether you prefer a climate-controlled interior or an exposed bed when building a rig. I chose the former because it would take the least work to go from showroom model to adventure vehicle. I did not have the time or resources to make a Tacoma as livable as a stock 4Runner. I still wanted some of the benefits of a pickup, though, such as plenty of storage space and room to sleep on my vehicle in a pinch. I decided I could achieve those goals with a raised platform. My design had to turn the 4Runner&#8217;s trunk and second row of seats into a flat area the size of a mid-size truck bed, with storage underneath; if I had to take passengers, it had to fold back into the trunk. A setup like this would give me the best of both worlds: the livability of an SUV with the capability of a truck, at much less than the price of building out some sort of camper shell.</p>
 <h3>Design Criteria</h3>
-<div class='floating_stats'><div>Words: 90. Sentences: 5</div><div>Overused phrase: 2</div><div>Repeated: 0; Avoid: 0</div></div>
+<div class='floating_stats'><div>Words: 103. Sentences: 6</div><div>Overused phrase: 0</div><div>Repeated: 0; Avoid: 0</div></div>
 
-<p>Once I had decided to build some sort of platform, I started by spelling out my design criteria. First, it had to turn the trunk and second row of seats into a flat area large enough to sleep on. It also had to stay as short as possible, to maximize headroom. The space beneath it would serve as a storage compartment. <span class='replace'> <span class='replace'> In addition </span> to </span> storage, though, I also wanted to build a camp kitchen into that space, with a room for a <a href="https://orcacoolers.com/collections/75-quart/products/green-75-cooler">large cooler</a> or <a href="https://www.snomasterusa.com/product/classic-series-bdc-65-stainless-steel-acdc-fridgefreezer/">portable refrigerator</a> and a stove.</p>
+<p>Once I decided to build some sort of platform, I started spelling out my design criteria. First, it had to turn the trunk and second row of seats into a flat area large enough to sleep on. I still wanted to use the second row of seats, though, so it had to fold back into the trunk, too. It also had to stay as short as possible, to maximize headroom. The space beneath it would house camp gear. I also wanted to use that space for a small camp kitchen, with an area for a <a href="https://orcacoolers.com/collections/75-quart/products/green-75-cooler">large cooler</a> or <a href="https://www.snomasterusa.com/product/classic-series-bdc-65-stainless-steel-acdc-fridgefreezer/">portable refrigerator</a> and a stove.</p>
+<div class='floating_stats'><div>Words: 113. Sentences: 5</div><div>Overused phrase: 0</div><div>Repeated: 0; Avoid: 0</div></div>
+
+<p>Over the next few months, I drew many versions of the platform. First on paper, then in Google SketchUp, until I felt I had something worth building. My final design consisted of two drawers in the trunk, one for storage and one for a cooler and a stove. Over the second row of seats, two independent folding platforms would allow me to stow the left or right side depending on whether I wanted to use the single or double seat in the second row, or both. I have included a picture of the final design below; I also have a link to the 3D model, and a brief writeup, on <a href="/projects">my Projects page</a>.</p>
+<div class='floating_stats'><div>Words: 12. Sentences: 1</div><div>Overused phrase: 0</div><div>Repeated: 0; Avoid: 0</div></div>
+<div class="image"><img src="/Users/zjszewczyk/Dropbox/Code/Standalone/Static/Images/4Runner_sleeping_platform.jpg" alt="Full view of 4Runner sleeping platform" title="Full view of 4Runner sleeping platform"></div>
+<div class='floating_stats'><div>Words: 21. Sentences: 2</div><div>Overused phrase: 0</div><div>Repeated: 0; Avoid: 0</div></div>
+
+<p>I will share more pictures of the system later. This design met all my criteria, and so I began gathering materials.</p>
+<h3>Sourcing Materials</h3>
+<div class='floating_stats'><div>Words: 70. Sentences: 3</div><div>Overused phrase: 0</div><div>Repeated: 0; Avoid: 0</div></div>
+
+<p>Although I got almost everything at the local hardware store, I want to point out that I ordered <a href="https://www.mcmaster.com/6603a55">the locking slides</a> for each drawer from <a href="https://www.mcmaster.com">McMaster-Carr</a>. I can always count on great service and reasonable prices there, and they stock almost any part I can imagine. McMaster-Carr plays an important role in every project I take on, and I encourage everyone to source their parts and raw materials from them.</p>
 <h3>The Build Process</h3>
-<div class='floating_stats'><div>Words: 29. Sentences: 2</div><div>Overused phrase: 0</div><div>Repeated: 0; Avoid: 0</div></div>
+<div class='floating_stats'><div>Words: 36. Sentences: 2</div><div>Overused phrase: 0</div><div>Repeated: 0; Avoid: 0</div></div>
 
-<p>Over the next few months, I drew and re-drew many versions of the platform. First on paper, then in Google Sketchup, until I felt I had something worth building.</p>
+<p>After a trip to the hardware store, I started cutting on a warm Sunday afternoon. I did the entire project with hand tools, over the next five days and after many trips back to the store.</p>
 <div class='floating_stats'><div>Words: 42. Sentences: 3</div><div>Overused phrase: 1</div><div>Repeated: 0; Avoid: 2</div></div>
 
 <p>Started cutting on a Sunday, and finished the <span class='replace'> following </span> Friday. Didn&#8217;t spend all day everyday on it, but <span class='avoid'>definitely</span> spent more time than I thought I would. If you just worked on it straight, you could <span class='avoid'>probably</span> finish in a weekend, though.</p>
@@ -229,24 +241,27 @@
 <p>The final product:</p>
 <div class='floating_stats'><div>Words: 2. Sentences: 1</div><div>Overused phrase: 0</div><div>Repeated: 0; Avoid: 0</div></div>
 <div class="image"><img src="/Users/zjszewczyk/Dropbox/Code/Standalone/Static/Images/MTV/IMG_5832.jpg" alt="Front" title="Front"></div>
+<div class='floating_stats'><div>Words: 82. Sentences: 5</div><div>Overused phrase: 0</div><div>Repeated: 0; Avoid: 0</div></div>
+
+<p>I use the large drawer on the right for storage. The left drawer houses a stove that slides out over the removable front panel. I also made this side shorter, to accommodate a large cooler or portable refrigerator. Although cramped, I can get into it from inside the vehicle, or use the locking slides to access it from outside. If I take the cooler out, I have two small boards that cover the opening to make the entire trunk one level platform.</p>
 </article>
             </section>
             <section id="document_stats">
                 <h4>Document Statistics</h4>
                 <div>
-                    <time datetime="2019-2-24 18:23:29" pubdate="pubdate">Built on 2019-2-24 18:23:29</time>
+                    <time datetime="2019-2-24 20:1:17" pubdate="pubdate">Built on 2019-2-24 20:1:17</time>
                 </div>
                 <div>
-                    <p>Words: <span>681</span></p>
-                    <p>Sentences: <span>54</span></p>
-                    <p>Paragraphs: <span>31</span></p>
-                    <p>Avg. words/paragraph: <span>21</span></p>
-                    <p class="tooltip">Overused phrases: <span>4</span><span class="tooltiptext"><a target="blank_" href="http://www.plainenglish.co.uk/the-a-z-of-alternative-words.html">Plain English Campaign</a></span></p>
+                    <p>Words: <span>1001</span></p>
+                    <p>Sentences: <span>72</span></p>
+                    <p>Paragraphs: <span>37</span></p>
+                    <p>Avg. words/paragraph: <span>27</span></p>
+                    <p class="tooltip">Overused phrases: <span>1</span><span class="tooltiptext"><a target="blank_" href="http://www.plainenglish.co.uk/the-a-z-of-alternative-words.html">Plain English Campaign</a></span></p>
                     <p>Repeated words: <span>1</span></p>
                     <p class="tooltip">Words to avoid: <span>9</span><span class="tooltiptext">"Be" verbs, and adverbs.</span></p>
-                    <p class="tooltip">Fog index: <span>6.75</span>&#8595;<span class="tooltiptext">The <a target="blank_" href="https://en.wikipedia.org/wiki/Gunning_fog_index">Gunning Fog Index</a> estimates the years of formal education needed to understand the text on a first reading.</span></p>
-                    <p class="tooltip">Reading ease: <span><span class='tough'>58.04</span></span>&#x2191;<span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid reading ease</a>: higher scores indicate material that is easier to read; lower numbers indicate difficulty.</span></p>
-                    <p class="tooltip">Grade level: <span>9.55</span>&#8595;<span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid grade level</a>: estimates the number of years of education generally required to understand this text.</span></p>
+                    <p class="tooltip">Fog index: <span>7.60</span>&#8595;<span class="tooltiptext">The <a target="blank_" href="https://en.wikipedia.org/wiki/Gunning_fog_index">Gunning Fog Index</a> estimates the years of formal education needed to understand the text on a first reading.</span></p>
+                    <p class="tooltip">Reading ease: <span><span class='plain'>60.67</span></span>&#x2191;<span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid reading ease</a>: higher scores indicate material that is easier to read; lower numbers indicate difficulty.</span></p>
+                    <p class="tooltip">Grade level: <span>9.29</span>&#8595;<span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid grade level</a>: estimates the number of years of education generally required to understand this text.</span></p>
                 </div>
             </section>
         </main>
