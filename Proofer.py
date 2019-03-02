@@ -447,6 +447,12 @@ def GenFile(iname):
         # If we're looking at an empty line, just skip over it; else continue
         if (line.count(" ") == 0):
             continue
+
+        # Do not collect statistics on code snippets. Write them to the file and
+        # then move on.
+        if (line[0:5] == "<pre>"):
+            o_fd.write(Markdown(line)+"\n")
+            continue
         
         # Instantiate paragraph-specific statistics
         wc = 0 # Word count for current paragraph
