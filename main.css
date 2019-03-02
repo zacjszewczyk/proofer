@@ -96,7 +96,10 @@ p:hover .complex_word {
 p a {
     text-decoration: underline; }
 pre {
-    white-space: pre-wrap; }
+    white-space: pre-wrap;
+    background-color: #f0f0f0;
+    padding: 1em;
+    border-radius: 2px; }
 .shell:before {
     content: "$ "; }
 .cmd:before {
