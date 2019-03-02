@@ -525,6 +525,7 @@ def GenFile(iname):
             if (not (re.search("^[A-Z]", stripped))):
                 if ("-" not in stripped):
                     if (sylco(stripped.lower()) >= 3):
+                        line = re.sub(r"[^\>]"+word+r"[^\<]", "\1<span class='complex_word'>"+word+'</span>\2', line)
                         complex_words += 1
 
             syllable_count += sylco(stripped.lower())

@@ -90,6 +90,9 @@ main article>time {
 nav a {
     margin: 0px 5%;
     white-space: nowrap; }
+p:hover .complex_word {
+    color: red;
+}
 p a {
     text-decoration: underline; }
 pre {
