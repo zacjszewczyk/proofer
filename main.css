@@ -97,6 +97,10 @@ p a {
     text-decoration: underline; }
 pre {
     white-space: pre-wrap; }
+.shell:before {
+    content: "$ "; }
+.cmd:before {
+    content: "> "; }
 #series_index {
     margin-top: 100px;
     padding-top: 2em;

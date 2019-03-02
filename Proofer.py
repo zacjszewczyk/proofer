@@ -332,6 +332,8 @@ def Markdown(line):
             line = "<div style='text-align:center;'>"+line+"</div>"
         elif (line.startswith("<ul")):
             pass
+        elif (line[0:4] == "<pre"):
+            pass
         # Anything else should be a blockquote
         else:
             line = "<blockquote>"+line+"</blockquote>"
@@ -450,7 +452,7 @@ def GenFile(iname):
 
         # Do not collect statistics on code snippets. Write them to the file and
         # then move on.
-        if (line[0:5] == "<pre>"):
+        if (line[0:4] == "<pre"):
             o_fd.write(Markdown(line)+"\n")
             continue
         
@@ -536,7 +538,7 @@ def GenFile(iname):
         sentences = (len(re.findall("\.[^\w]",line))+len(re.findall("[?!]",line))) or 1
         total_sentences += sentences
 
-        if (not line.startswith("* ") and not line.startswith("#")):
+        if (not line.startswith("* ") and not line.startswith("#") and not line.startswith("<pre")):
             # Write the paragraph stats div to the output file, then the parsed line.
             o_fd.write("<div class='floating_stats'><div>Words: %d. Sentences: %d</div><div>Overused phrase: %d</div><div>Repeated: %d; Avoid: %d</div></div>\n" % (word_count[-1], sentences, overused_words, repeated_words, avoid_words))
         o_fd.write(Markdown(line)+"\n")
