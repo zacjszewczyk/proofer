@@ -187,8 +187,8 @@ def Markdown(line):
     # If line starts with {}, open target file, and return the contents with a return statement. Skip the rest w/ a return statement.
 
     # Part of a series
-    if (line.startswith("{")):
-        fd = open("Content/System/"+line.lstrip("{").replace("}", "").strip(), "r")
+    if (line[0] == "{"):
+        fd = open("Content/System/"+line[1:-1].strip(), "r")
         line = "<ul style=\"border:1px dashed gray\" id=\"series_index\">\n"
         for each in fd.read().split("\n"):
             line += "    <li>"+Markdown(each)+"</li>\n"
@@ -196,11 +196,11 @@ def Markdown(line):
         types.append("RAW HTML")
         fd.close()
     # Header elements, <h1>-<h6>
-    elif (line.startswith("#")):
+    elif (line[0] == "#"):
         line = ("<h%d>"+line.replace("#", "").strip()+"</h%d>") % (line.split(" ")[0].count("#"), line.split(" ")[0].count("#"))+"\n"
         types.append("<h>,,</h>")
     # Images
-    elif (line.startswith("![")):
+    elif (line[0:1] == "!["):
         types.append("<img>,,</img>")
     # Footnote
     elif (re.match("(\[>[0-9]+\])", line) != None):
@@ -230,7 +230,7 @@ def Markdown(line):
     elif (re.match("[a-zA-Z_\[\*\"]", line) != None):
         types.append("<p>,,</p>")
     # Raw HTML code.
-    elif (re.match("<", line) != None or re.match("#", line) != None):
+    elif (line[0] == "<" or line[0] == "#"):
         types.append("RAW HTML")
     # A blank line. Two blank lines in a row is a linebreak.
     else:
@@ -252,14 +252,14 @@ def Markdown(line):
         # If I've already escaped a ascii code, pass; otherwise escape it.
         if (re.search("&[a-z]{4}\;", line) != None):
             pass
-        elif (re.search("(\&)", line) != None):
+        elif ("&" in line):
             line = line.replace("&", "&#38;")
 
         # Horizontal rules
-        if (re.match("---", line) != None):
+        if (line[0:3] == "---"):
             line = line.replace("---", "<hr style='margin:50px auto;width:50%;border:0;border-bottom:1px dashed #ccc;background:#999;' />")
         # Emdashes
-        if (re.search("(--)", line)):
+        if ("--" in line):
             line = line.replace("--", "&#160;&#8212;&#160;")
         # Parse double-quote quotations
         for each in re.findall("([\s\<\>\\\*\/\[\-\(]+\"[\[\w\%\#\\*<\>]+)", line):
@@ -298,8 +298,8 @@ def Markdown(line):
             line = line.replace("&&TK&&", ftxt)
         # Parse images, both local and remote
         for each in re.findall("(\!\[[\w\@\s\"'\|\<\>\.\#?\*\;\%\+\=!\,-:$&]+\]\(['\(\)\#\;?\@\%\w\&:\,\./\~\s\"\!\#\=\+-]+\))", line):
-            desc = each.split("]")[0].lstrip("![")
-            url = each.split("]")[1].split(" ")[0].lstrip("(").rstrip(")")
+            desc = each.split("]")[0][2:]
+            url = each.split("]")[1].split(" ")[0][1:-1]
             if (url.startswith("http://zacjszewczyk.com/")):
                 # print url.split("/")[-1]
                 url = """/Static/Images/%s""" % (url.split("/")[-1])
@@ -308,17 +308,17 @@ def Markdown(line):
         # This needs some attention to work with the new URL scheme
         # Parse links, both local and remote
         for each in re.findall("""(\[[\w\@\s\"'\|\<\>\.\#?\*\;\%\+\=!\,-:$&]*\])(\(\s*(<.*?>|((?:(?:\(.*?\))|[^\(\)]))*?)\s*((['"])(.*?)\12\s*)?\))""", line):
-            desc = each[0].lstrip("[").rstrip("]")
-            url = each[1].lstrip("(").rstrip(")").replace("&", "&amp;").strip()
-
-            if (not url.startswith("http://") and not url.startswith("https://")):
-                if (not url.endswith(".txt")):
-                    if (url.endswith(".htm")):
+            desc = each[0][1:-1]
+            url = each[1][1:-1].replace("&", "&amp;").strip()
+            
+            if ("http://" != url[0:7] and "https://" != url[0:8]):
+                if (".txt" != url[-4:]):
+                    if (".htm" == url[-4:]):
                         url = "/blog/"+url.replace(" ", "-").replace(".htm", "").lower()
                 else:
                     url = "/blog/"+url.replace(" ", "-").replace(".txt", "").lower()
 
-            if (url.endswith(".txt") == True):
+            if (".txt" == url[-4:]):
                 url = url.replace(".txt", "").replace(" ", "-").replace("&#8220;", "").replace("&#8221;", "").replace("&#8217;", "").replace("&#8216;", "").replace("&#8217;", "")
                 line = line.replace(each[0]+each[1], "<a class=\"local\" href=\""+url.replace(" ", "-")+"\">"+desc+"</a>")
             elif (url == ""):
@@ -327,17 +327,17 @@ def Markdown(line):
                 line = line.replace(each[0]+each[1], "<a href=\""+url+"\">"+desc+"</a>")
         # Parse footnotes
         for each in re.findall("(\[\^[0-9]+\])", line):
-            mark = each.lstrip("[^").rstrip("]")
+            mark = each[2:-1]
             url = """<sup id="fnref"""+mark+""""><a href="#fn"""+mark+"""" rel="footnote">"""+mark+"""</a></sup>"""
             line = line.replace(each, url)
         # Parse single-line comments
-        if (re.match("[/]{2}", line) != None):
+        if (line[0:2] == "//"):
             line = line.replace("//","<!--")+" -->"
     else:
         # Account for iframes
-        if (line.startswith("<iframe")):
+        if ("<iframe" == line[0:7]):
             line = "<div style='text-align:center;'>"+line+"</div>"
-        elif (line.startswith("<ul")):
+        elif ("<ul" == line[0:2]):
             pass
         elif (line[0:4] == "<pre"):
             pass
@@ -377,7 +377,7 @@ def Markdown(line):
     # If a footnote
     elif ((current == "<div class=\"footnote\">,,</div>")):
         active = "</div>"
-        mark = int(line.split("]")[0].lstrip("[>"))
+        mark = int(line.split("]")[0][2:])
         line = line.split("]")[1]
         # If the first footnote
         if (mark == 1): 
