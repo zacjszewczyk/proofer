@@ -275,6 +275,13 @@ def Markdown(line):
         for each in re.findall("([\s\(]'\w+)", line):
             ftxt = each.replace("\'", "&#8216;", 1)
             line = line.replace(each, ftxt)
+        # Interpret inline code
+        for each in re.findall("\%[\w:\"\.\+'\s\.|#\\&=,\$\!\?\;\-\[\]]+\%", line):
+            ftxt = each
+            line = line.replace(each, "&&TK&&")
+            ftxt = each.replace("%", "<span class='command'>", 1)
+            ftxt = ftxt.replace("%", "</span> ", 1).strip()
+            line = line.replace("&&TK&&", ftxt)            
         # Interpret <strong> tags
         for each in re.findall("\*\*{1}[\w:\"\.\+'\s\.|#\\&=,\$\!\?\;\-\[\]]+\*\*{1}", line):
             ftxt = each
@@ -527,7 +534,7 @@ def GenFile(iname):
             if (not (re.search("^[A-Z]", stripped))):
                 if ("-" not in stripped):
                     if (sylco(stripped.lower()) >= 3):
-                        line = re.sub(r"[^\>]"+word+r"[^\<]", "\1<span class='complex_word'>"+word+'</span>\2', line)
+                        line = re.sub(r"[^\>\w]"+word+r"[^\<\w]", "\1<span class='complex_word'>"+word+'</span>\2', line)
                         complex_words += 1
 
             syllable_count += sylco(stripped.lower())
