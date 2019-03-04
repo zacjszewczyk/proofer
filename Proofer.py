@@ -419,9 +419,8 @@ if (__name__ == "__main__"):
 
             f_s = n_s
     else:
-        print "Building: ",f
+        print "Building '%s'" % f
         GenFile(f)
-        print "Built."
 
         t2 = datetime.datetime.now()
 
