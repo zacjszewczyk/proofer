@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 # Import modules
 import sys
@@ -299,7 +299,7 @@ def Markdown(line):
         # Parse images, both local and remote
         for each in re.findall("(\!\[[\w\@\s\"'\|\<\>\.\#?\*\;\%\+\=!\,-:$&]+\]\(['\(\)\#\;?\@\%\w\&:\,\./\~\s\"\!\#\=\+-]+\))", line):
             desc = each.split("]")[0][2:]
-            url = each.split("]")[1].split(" ")[0][1:-1]
+            url = each.split("]")[1].split(" ")[0][1:]
             if (url.startswith("http://zacjszewczyk.com/")):
                 # print url.split("/")[-1]
                 url = """/Static/Images/%s""" % (url.split("/")[-1])
@@ -459,7 +459,7 @@ def GenFile(iname):
 
         # Do not collect statistics on code snippets. Write them to the file and
         # then move on.
-        if (line[0:4] == "<pre"):
+        if (line[0:4] == "<pre" or line[0:2] == "!["):
             o_fd.write(Markdown(line)+"\n")
             continue
         
@@ -493,6 +493,9 @@ def GenFile(iname):
         # verbs as well, and highlight them accordingly.
         # for word in backup.split(" "):
         for word in re.split("(\s|--)", backup):
+
+            if ("](" in word):
+                word = word.split("](")[0]
 
             # This strips any special characters from the word, such as punctuation.
             stripped = re.sub(r"^[\W]+", "", word.strip())
@@ -534,8 +537,23 @@ def GenFile(iname):
             if (not (re.search("^[A-Z]", stripped))):
                 if ("-" not in stripped):
                     if (sylco(stripped.lower()) >= 3):
-                        line = re.sub(r"[^\>\w]"+word+r"[^\<\w]", "\1<span class='complex_word'>"+word+'</span>\2', line)
+                        start = line.find(word)
+                        length = len(word)
+                        end = start+length
+
+                        # print "Searched: '%s'" % line[start:end]
+                        # print "With ends: '%s'" % line[start-1:end+1]
+                        # print "Preceeding character: '%s'" % line[start-1]
+                        # print "After character: '%s'" % line[end]
+                        # print re.match("[\>\w]", line[start-1])
+                        # print re.match("[\<\w]", line[end])
+                        # print line
+                        # print
+                        if not (re.match("[\>\w]", line[start-1]) or re.match("[\<\w]", line[end])):
+                            line = line.replace(stripped, "<span class='complex_word'>"+stripped+"</span>")
+                        # line = re.sub((r"[^\>\w]")+stripped+(r"[^\<\w]"), "\1<span class='complex_word'>"+stripped+"</span>\2", line)
                         complex_words += 1
+                        # sleep(1)
 
             syllable_count += sylco(stripped.lower())
 
@@ -606,20 +624,25 @@ if (__name__ == "__main__"):
         print "Provide valid file."
         sys.exit(1)
 
-    f_s = []
+    if (len(sys.argv) != 3):
+        f_s = []
 
-    while True:
-        n_s = os.stat(f)
-        n_s = [n_s.st_mtime, n_s.st_ctime]
+        while True:
+            n_s = os.stat(f)
+            n_s = [n_s.st_mtime, n_s.st_ctime]
 
-        if (f_s == n_s):
-            sleep(2)
-            continue
-        
-        # File has changed
-        d = datetime.datetime.now()
-        utime = "%d-%d-%d %d:%d:%d" % (d.year,d.month,d.day,d.hour,d.minute,d.second)
-        print "Building: ", utime
+            if (f_s == n_s):
+                sleep(2)
+                continue
+            
+            # File has changed
+            d = datetime.datetime.now()
+            utime = "%d-%d-%d %d:%d:%d" % (d.year,d.month,d.day,d.hour,d.minute,d.second)
+            print "Building: ", utime
+            GenFile(f)
+
+            f_s = n_s
+    else:
+        print "Building: ",f
         GenFile(f)
-
-        f_s = n_s
+        print "Built."
