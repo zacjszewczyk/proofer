@@ -388,6 +388,8 @@ def GenFile(iname):
     o_fd.close()
 
 if (__name__ == "__main__"):
+    t1 = datetime.datetime.now()
+
     if (len(sys.argv) <= 1):
         print "Provide text file."
         sys.exit(1)
@@ -420,3 +422,7 @@ if (__name__ == "__main__"):
         print "Building: ",f
         GenFile(f)
         print "Built."
+
+        t2 = datetime.datetime.now()
+
+        print ("Execution time: %s" % (t2-t1))
