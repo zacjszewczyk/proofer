@@ -37,7 +37,7 @@ def SyllableCount(word):
     for index in range(1, len(word)):
         if word[index] in vowels and word[index - 1] not in vowels:
             count += 1
-    if word.endswith("e"):
+    if word[-1] == "e":
         count -= 1
     if count == 0:
         count += 1
@@ -300,7 +300,7 @@ def GenFile(iname):
 
             # Check for be verbs, "ly" words in the document. If found, highlight
             # them and increment the be verb count.
-            if (stripped.lower() in be_verbs) or (stripped.lower().endswith("ly")):
+            if (stripped.lower() in be_verbs) or (stripped.lower()[-2:] == "ly"):
                 line = re.sub(r"([^\w])"+stripped+r"([^\w])", r"\1<span class='avoid'>"+stripped+r"</span>\2", line)
                 avoid_words += 1
                 total_avoid_words += 1
@@ -337,7 +337,7 @@ def GenFile(iname):
         sentences = (len(re.findall("\.[^\w]",line))+len(re.findall("[?!]",line))) or 1
         total_sentences += sentences
 
-        if (not line.startswith("* ") and not line.startswith("#") and not line.startswith("<pre")):
+        if (line[0:1] != "* " and line[0] != "#" and line[0:3] != "<pre"):
             # Write the paragraph stats div to the output file, then the parsed line.
             o_fd.write("<div class='floating_stats'><div>Words: %d. Sentences: %d</div><div>Overused phrase: %d</div><div>Repeated: %d; Avoid: %d</div></div>\n" % (word_count[-1], sentences, overused_words, repeated_words, avoid_words))
         o_fd.write(Markdown(line)+"\n")
