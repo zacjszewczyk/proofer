@@ -6,6 +6,7 @@ import os
 from time import sleep
 import datetime
 import re
+sys.path.insert(0, '/Users/zjszewczyk/Dropbox/Code/Standalone')
 from Markdown import Markdown
 
 ####
