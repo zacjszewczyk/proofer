@@ -220,6 +220,7 @@ def GenFile(iname):
     o_fd.write("<article>\n")
     o_fd.write(title)
 
+    block = False
     # Iterate over each line in the file
     for line in iter(fd.readline, ""):
         fk_wc += line.count(" ")+1
@@ -228,12 +229,24 @@ def GenFile(iname):
         backup = line
         
         # If we're looking at an empty line, just skip over it; else continue
-        if (line.count(" ") == 0):
+        if (len(line.strip()) == 0):
             continue
 
-        # Do not collect statistics on code snippets. Write them to the file and
-        # then move on.
-        if (line[0:4] == "<pre" or line[0:2] == "!["):
+        # Do not collect stats on code snippets. Write them to the file and
+        # move on.
+        if (line[0:4] == "<pre" or block == True):
+            if (line.find("</pre>") == -1):
+                print "Blocking..."
+                block = True
+            else:
+                print "End block..."
+                block = False
+            print "Writing raw: ",line
+            o_fd.write(line.strip()+"\n")
+            continue
+        
+        # Do not collect stats on images. Write them to the file and move on.
+        if (line[0:2] == "!["):
             o_fd.write(Markdown(line)+"\n")
             continue
         
