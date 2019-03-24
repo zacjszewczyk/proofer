@@ -236,12 +236,9 @@ def GenFile(iname):
         # move on.
         if (line[0:4] == "<pre" or block == True):
             if (line.find("</pre>") == -1):
-                print "Blocking..."
                 block = True
             else:
-                print "End block..."
                 block = False
-            print "Writing raw: ",line
             o_fd.write(line.strip()+"\n")
             continue
         
