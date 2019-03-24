@@ -239,11 +239,9 @@ def GenFile(iname):
                 block = True
             else:
                 block = False
-            o_fd.write(line.strip()+"\n")
-            continue
         
         # Do not collect stats on images. Write them to the file and move on.
-        if (line[0:2] == "!["):
+        if (line[0:2] == "![" or line[0:4] == "<pre"):
             o_fd.write(Markdown(line)+"\n")
             continue
         
@@ -347,7 +345,7 @@ def GenFile(iname):
         sentences = (len(re.findall("\.[^\w]",line))+len(re.findall("[?!]",line))) or 1
         total_sentences += sentences
 
-        if (line[0:1] != "* " and line[0] != "#" and line[0:3] != "<pre"):
+        if (line[0:1] != "* " and line[0] != "#" and line[0:3] != "<pre" and block == False and line[-7:].strip() != "</pre>"):
             # Write the paragraph stats div to the output file, then the parsed line.
             o_fd.write("<div class='floating_stats'><div>Words: %d. Sentences: %d</div><div>Overused phrase: %d</div><div>Repeated: %d; Avoid: %d</div></div>\n" % (word_count[-1], sentences, overused_words, repeated_words, avoid_words))
         o_fd.write(Markdown(line)+"\n")
