@@ -31,3 +31,8 @@ For each individual paragraph, Proofer also provides the following statistics. T
 * Number of overused words and phrases - See above.
 * Number of repeated words - See above.
 * Number of words to avoid - See above.
+
+## Future Work
+
+* This project has many quirks and errors. I use it to proof everything I write, though, and so as I encounter these bugs, I will fix them. 
+* The live preview needs some work. Currently, Proofer watches a target file for changes; once changed, it rebuilds an output HTML file. The HTML file reloads every five seconds as long as it is not currently in focus. This works, but it does have some quirks--and it causes a page to constantly refresh in the background, which can be distracting.
