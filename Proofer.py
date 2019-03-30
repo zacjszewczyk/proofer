@@ -28,22 +28,8 @@ exclude         = be_verbs+["the", "a", "or", "my", "and", "to", "we", "I", "for
 # Method: SyllableCount
 # Purpose: Accept a word and return the number of syllables
 # Parameters: word: Word to be parsed. (String)
-def SyllableCount(word):
-    word = word.lower()
-    count = 0
-    vowels = "aeiouy"
-    if word[0] in vowels:
-        count += 1
-    for index in range(1, len(word)):
-        if word[index] in vowels and word[index - 1] not in vowels:
-            count += 1
-    if word[-1] == "e":
-        count -= 1
-    if count == 0:
-        count += 1
-    return count
-
-def sylco(word) :
+# H/t: https://github.com/eaydin/sylco
+def SyllableCount(word) :
 
     word = word.lower()
 
@@ -318,7 +304,7 @@ def GenFile(iname):
             # the number of syllables in the remaining word is >= 3, found a complex word.
             if (not (re.search("^[A-Z]", stripped))):
                 if ("-" not in stripped):
-                    if (sylco(stripped.lower()) >= 3):
+                    if (SyllableCount(stripped.lower()) >= 3):
                         start = line.find(word)
                         length = len(word)
                         end = start+length
@@ -337,7 +323,7 @@ def GenFile(iname):
                         complex_words += 1
                         # sleep(1)
 
-            syllable_count += sylco(stripped.lower())
+            syllable_count += SyllableCount(stripped.lower())
 
         word_count.append(wc)
 
