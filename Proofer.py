@@ -317,7 +317,7 @@ def GenFile(iname):
                         # print re.match("[\<\w]", line[end])
                         # print line
                         # print
-                        if not (re.match("[\>\w]", line[start-1]) or re.match("[\<\w]", line[end]) or "http" in stripped):
+                        if not ("http" in stripped or re.match("[\>\w]", line[start-1]) or re.match("[\<\w]", line[end])):
                             line = line.replace(stripped, "<span class='complex_word'>"+stripped+"</span>")
                         # line = re.sub((r"[^\>\w]")+stripped+(r"[^\<\w]"), "\1<span class='complex_word'>"+stripped+"</span>\2", line)
                         complex_words += 1
