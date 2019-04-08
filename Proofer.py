@@ -200,7 +200,6 @@ def GenFile(iname):
     
     # Get rid of the title separator (=) and the following blank line
     fd.readline()
-    fd.readline()
 
     # Write the opening <article> tag and article title
     o_fd.write("<article>\n")
