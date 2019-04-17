@@ -196,7 +196,12 @@ def GenFile(iname):
     fd = open(iname, "r")
     
     # Read the title from the source file
-    title = "<h2>"+fd.readline().strip()+"</h2>\n"
+    title = fd.readline().strip()
+    if (title[0] == "#"):
+        title = title.split("](")
+        title = "<h2 class='linkpost'><a href=\""+title[1][:-3]+"\">"+title[0][3:]+"</a></h2>"
+    else:
+        title = "<h2 class='original'>"+title+"</h2>\n"
     
     # Get rid of the title separator (=) and the following blank line
     fd.readline()
