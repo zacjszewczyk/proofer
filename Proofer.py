@@ -382,7 +382,7 @@ def GenFile(iname):
     fgl = 0.39 * float(total_word_count)/float(total_sentences) + 11.8 * float(syllable_count)/float(total_word_count) - 15.59
 
     # Write the closing HTML to the output file, with document stats. Close it.
-    o_fd.write(template[1] % (utime, utime, total_word_count, total_sentences, len(word_count), total_word_count/len(word_count), total_overused_words, total_repeated_words, total_avoid_words, gfi, fkr, fgl))
+    o_fd.write(template[1] % (utime, utime, total_word_count, str(total_word_count/200.0)+" mins", total_sentences, len(word_count), total_word_count/len(word_count), total_overused_words, total_repeated_words, total_avoid_words, gfi, fkr, fgl))
     o_fd.close()
 
 if (__name__ == "__main__"):
