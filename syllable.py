@@ -2,6 +2,7 @@
 
 # Imports
 from re import findall # Vowel count
+from scraper import scrape, getHeaders # Web scraper
 
 # Method: OldSyllableCount
 # Purpose: Accept a word and return the number of syllables
@@ -116,23 +117,48 @@ def NewSyllableCount(word):
       # Triphthong: when 3 vowels make only 1 sound (iou)
     # Does the word end with "le" or "les?" Add 1 only if the letter before the "le" is a consonant.
     # The number you get is the number of syllables in your word.
+    pass
 
 # Method: FindConflicts
 # Purpose: Find syllable conflicts between dictionary and algorithm
 # Parameters:
 # - syllable_dictionary: Wordlist with syllables (List)
 def FindConflicts(syllable_dictionary):
-    # for word, syllable in syllable_dictionary:
-    #     predicted_syllable = NewSyllableCount(word)
-    #     if (syllable != predicted_syllable):
-    #         print(word,"-","Actual:",syllable,"/ Predicted",predicted_syllable)
+    for word, syllable in syllable_dictionary:
+        predicted_syllable = NewSyllableCount(word)
+        if (syllable != predicted_syllable):
+            print(word,"-","Actual:",syllable,"/ Predicted",predicted_syllable)
 
 # Method: BuildSyllableDictionary
 # Purpose: Enrich wordlist with true syllables from a dictionary
 # Parameters: none.
 def BuildSyllableDictionary():
+    fd = open("sample.txt", "r")
+    for i, word in enumerate(fd):
+        word = word.strip()
+        if (word[0].isupper()):
+            print("Error:",word,"is a proper noun.")
+        else:
+            resp = scrape("https://google.com/search?q=define%20"+word)
+            if ('<span data-dobid="hdw">' in resp):
+                resp = resp.split('<span data-dobid="hdw">',1)[1].split("</span>",1)[0]
+            elif ('<div data-hveid="20">' in resp):
+                resp = resp.split('<div data-hveid="20">',1)[1].split(">",1)[1].split("<",1)[0]
+            else:
+                open("error.html", "w").close()
+                error_fd = open("error.html", "a")
+                error_fd.write(resp)
+                error_fd.write('\n'+getHeaders())
+                error_fd.close()
+                print("Error saved to 'error.html'")
+                break
+            print(i,resp,resp.count("·")+1)
+    fd.close()
     # Use a wordlist or command line dictionary (i.e. https://github.com/Mckinsey666/vocabs) for input
     # Get true syllables for each word
     # Save in the format [word, syllables]
     # Append to syllable_dictionary
     # return syllable_dictionary
+
+if (__name__ == "__main__"):
+    BuildSyllableDictionary()
