@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python3
 
 # Import modules
 import sys
@@ -313,13 +313,13 @@ def GenFile(iname):
                         length = len(word)
                         end = start+length
 
-                        # print "Searched: '%s'" % line[start:end]
-                        # print "With ends: '%s'" % line[start-1:end+1]
-                        # print "Preceeding character: '%s'" % line[start-1]
-                        # print "After character: '%s'" % line[end]
-                        # print re.match("[\>\w]", line[start-1])
-                        # print re.match("[\<\w]", line[end])
-                        # print line
+                        # print("Searched: '%s'" % line[start:end])
+                        # print("With ends: '%s'" % line[start-1:end+1])
+                        # print("Preceeding character: '%s'" % line[start-1])
+                        # print("After character: '%s'" % line[end])
+                        # print(re.match("[\>\w]", line[start-1]))
+                        # print(re.match("[\<\w]", line[end]))
+                        # print(line)
                         # print
                         if not ("http" in stripped or re.match("[\>\w]", line[start-1]) or re.match("[\<\w]", line[end])):
                             line = line.replace(stripped, "<span class='complex_word'>"+stripped+"</span>")
@@ -361,20 +361,21 @@ def GenFile(iname):
     # Calculate Flesch-Kincaid Readability Test
     # higher scores indicate material that is easier to read; lower numbers indicate difficulty.
     fkr = 206.835 - 1.015*(float(fk_wc)/float(total_sentences)) - 84.6*(float(syllable_count)/float(fk_wc))
+    print(type(fkr))
 
     if (fkr <= 30.0):
         fkr = "<span class='extreme'>%3.2f</span>" % (fkr)
-    if (fkr <= 50.0):
+    elif (fkr <= 50.0):
         fkr = "<span class='hard'>%3.2f</span>" % (fkr)
-    if (fkr <= 60.0):
+    elif (fkr <= 60.0):
         fkr = "<span class='tough'>%3.2f</span>" % (fkr)
-    if (fkr <= 70.0):
+    elif (fkr <= 70.0):
         fkr = "<span class='plain'>%3.2f</span>" % (fkr)
-    if (fkr <= 80.0):
+    elif (fkr <= 80.0):
         fkr = "<span class='fair'>%3.2f</span>" % (fkr)
-    if (fkr <= 90.0):
+    elif (fkr <= 90.0):
         fkr = "<span class='easy'>%3.2f</span>" % (fkr)
-    if (fkr <= 100.00):
+    elif (fkr <= 100.00):
         fkr = "<span class='simple'>%3.2f</span>" % (fkr)
 
     # Calculate the Flesch-Kincaid Grade level:
@@ -389,13 +390,13 @@ if (__name__ == "__main__"):
     t1 = datetime.datetime.now()
 
     if (len(sys.argv) <= 1):
-        print "Provide text file."
+        print("Provide text file.")
         sys.exit(1)
 
     f = sys.argv[1]
 
     if (not os.path.isfile(f)):
-        print "Provide valid file."
+        print("Provide valid file.")
         sys.exit(1)
 
     if (len(sys.argv) != 3):
@@ -412,14 +413,14 @@ if (__name__ == "__main__"):
             # File has changed
             d = datetime.datetime.now()
             utime = "%d-%d-%d %d:%d:%d" % (d.year,d.month,d.day,d.hour,d.minute,d.second)
-            print "Building: ", utime
+            print("Building: ", utime)
             GenFile(f)
 
             f_s = n_s
     else:
-        print "Building '%s'" % f
+        print("Building '%s'" % f)
         GenFile(f)
 
         t2 = datetime.datetime.now()
 
-        print ("Execution time: %s" % (t2-t1))
+        print(("Execution time: %s" % (t2-t1)))
