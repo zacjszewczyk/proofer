@@ -131,4 +131,8 @@ def FindConflicts(syllable_dictionary):
 # Purpose: Enrich wordlist with true syllables from a dictionary
 # Parameters: none.
 def BuildSyllableDictionary():
-    # 
+    # Use a wordlist or command line dictionary (i.e. https://github.com/Mckinsey666/vocabs) for input
+    # Get true syllables for each word
+    # Save in the format [word, syllables]
+    # Append to syllable_dictionary
+    # return syllable_dictionary
