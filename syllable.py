@@ -173,11 +173,11 @@ def BuildSyllableDictionary():
             print(word,",",resp.count("-")+1)
             d_fd.write(word+","+str(resp.count("-")+1))
         else:
-            open("error.html", "w").close()
-            error_fd = open("error.html", "a")
-            error_fd.write(resp)
-            error_fd.write('\n'+getHeaders())
-            error_fd.close()
+            # open("error.html", "w").close()
+            # error_fd = open("error.html", "a")
+            # error_fd.write(resp)
+            # error_fd.write('\n'+getHeaders())
+            # error_fd.close()
             print(word,",",-1)
             d_fd.write(word+","+str(-1))
 
