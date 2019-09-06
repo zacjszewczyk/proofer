@@ -259,10 +259,11 @@ def NewSyllableCount(word):
     elif(word[-1] == 'y'):
         syllables += 1
     for i,c in enumerate(word):
-        if (i != 0 and i != (len(word)-1)):
-            if (word[i-1] not in "aeiou" and word[i+1] not in "aeiou"):
-                syllables += 1
-    
+        if (c == 'y'):
+            if (i != 0 and i != (len(word)-1)):
+                if (word[i-1] not in "aeiou" and word[i+1] not in "aeiou"):
+                    syllables += 1
+
       # Subtract 1 for each silent vowel (like the silent 'e' at the end of a word).
     # Subtract 1 for each diphthong or triphthong in the word.
       # Diphthong: when 2 vowels make only 1 sound (au, oy, oo)
