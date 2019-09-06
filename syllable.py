@@ -4,6 +4,7 @@
 from re import findall # Vowel count
 from scraper import scrape, getHeaders # Web scraper
 from os.path import exists
+from os import remove, rename
 
 # Method: OldSyllableCount
 # Purpose: Accept a word and return the number of syllables
@@ -145,9 +146,9 @@ def BuildSyllableDictionary():
     for i, word in enumerate(s_fd):
         word = word.lower().strip()
 
-        comp = c_fd.readline().split(",")
+        comp = c_fd.readline().split(",")[0].strip()
 
-        if (word == comp[0]):
+        if (word == comp):
             print("PASS:",word)
             continue
 
@@ -155,12 +156,12 @@ def BuildSyllableDictionary():
         if ('<span data-dobid="hdw">' in resp):
             resp = resp.split('<span data-dobid="hdw">',1)[1].split("</span>",1)[0]
             print(word,",",resp.count("·")+1)
-            d_fd.write(word+","+str(resp.count("·")+1))
+            d_fd.write(word+","+str(resp.count("·")+1)+'\n')
             continue
         elif ('<div data-hveid="20">' in resp):
             resp = resp.split('<div data-hveid="20">',1)[1].split(">",1)[1].split("<",1)[0]
             print(word,",",resp.count("·")+1)
-            d_fd.write(word+","+str(resp.count("·")+1))
+            d_fd.write(word+","+str(resp.count("·")+1)+'\n')
             continue
         else:
             resp = ""
@@ -171,7 +172,7 @@ def BuildSyllableDictionary():
         if ('<p id="SyllableContentContainer">' in resp and '<span class="Answer_Red">' in resp.split('<p id="SyllableContentContainer">',1)[1]):
             resp = resp.split('<p id="SyllableContentContainer">',1)[1].split('<span class="Answer_Red">',1)[1].split('</span>',1)[0]
             print(word,",",resp.count("-")+1)
-            d_fd.write(word+","+str(resp.count("-")+1))
+            d_fd.write(word+","+str(resp.count("-")+1)+'\n')
         else:
             # open("error.html", "w").close()
             # error_fd = open("error.html", "a")
@@ -179,17 +180,21 @@ def BuildSyllableDictionary():
             # error_fd.write('\n'+getHeaders())
             # error_fd.close()
             print(word,",",-1)
-            d_fd.write(word+","+str(-1))
+            d_fd.write(word+","+str(-1)+'\n')
 
-        if (i == 25):
+        if (i > 2500):
             break
         
     s_fd.close()
     d_fd.close()
     c_fd.close()
 
-    remove("./out.txt")
-    rename("./out.txt.bak", "./out.txt")
+    s_fd = open("./out.txt.bak", "r")
+    d_fd = open("./out.txt", "a")
+    for i,line in enumerate(s_fd):
+        d_fd.write(line)
+
+    remove("./out.txt.bak")
 
     # Use a wordlist or command line dictionary (i.e. https://github.com/Mckinsey666/vocabs) for input
     # Get true syllables for each word
