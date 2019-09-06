@@ -249,28 +249,39 @@ def MySyllableCount(word):
 # Parameters:
 # - word: Word to be parsed. (String)
 def NewSyllableCount(word):
-    syllables = 0
+    add = 0
+    dele = 0
 
     # Count the number of vowels (A, E, I, O, U) in the word.
-    syllables = len(findall("[aeoiu]", word))
+    add = len(findall("[aeoiu]", word))
     # Add 1 every time the letter 'y' makes the sound of a vowel (A, E, I, O, U).
-    if (syllables == 0 and 'y' in word):
-        syllables += 1
+    if (add == 0 and 'y' in word):
+        add += 1
     elif(word[-1] == 'y'):
-        syllables += 1
+        add += 1
     for i,c in enumerate(word):
         if (c == 'y'):
             if (i != 0 and i != (len(word)-1)):
                 if (word[i-1] not in "aeiou" and word[i+1] not in "aeiou"):
-                    syllables += 1
-
-      # Subtract 1 for each silent vowel (like the silent 'e' at the end of a word).
+                    add += 1
+    # Subtract 1 for each silent vowel (like the silent 'e' at the end of a word).
+    if (word[-1] in 'e'):
+        dele += 1
     # Subtract 1 for each diphthong or triphthong in the word.
-      # Diphthong: when 2 vowels make only 1 sound (au, oy, oo)
-      # Triphthong: when 3 vowels make only 1 sound (iou)
+    # - Diphthong: when 2 vowels make only 1 sound (au, oy, oo)
+    for match in findall("[aeiouy][aeiouy]",word):
+        if (match not in ["ia", "ua"]):
+            dele += 1
+    # - Triphthong: when 3 vowels make only 1 sound (iou)
+    dele += len(findall("[aeiouy][aeiouy][aeiouy]",word))
     # Does the word end with "le" or "les?" Add 1 only if the letter before the "le" is a consonant.
-    # The number you get is the number of syllables in your word.
-    pass
+    if (word[-2:] == "le" and word[-3] not in "aeiouy"):
+        add += 1
+    elif (word[-3:] == "les" and word[-4] not in "aeiouy"):
+        add += 1
+    if ("n't" in word):
+        add += 1
+    return add - dele
 
 # Method: FindConflicts
 # Purpose: Find syllable conflicts between dictionary and target algorithm
