@@ -367,7 +367,7 @@ def BuildSyllableDictionary():
             print(word,",",-1)
             d_fd.write(word+","+str(-1)+'\n')
 
-        if (i > 2500):
+        if (i > 25000):
             break
         
     s_fd.close()
@@ -382,5 +382,5 @@ def BuildSyllableDictionary():
     remove("./out.txt.bak")
 
 if (__name__ == "__main__"):
-    # BuildSyllableDictionary()
-    FindConflicts("sylco")
+    BuildSyllableDictionary()
+    # FindConflicts("sylco")
