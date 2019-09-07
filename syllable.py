@@ -420,6 +420,32 @@ def BuildSyllableDictionaryWithMultiprocessing():
     with Pool() as pool:
         pool.map(BuildDict, files)
 
+def BuildDict(tgt):
+    # Clear an interim output file, then open for appending
+    open("./interim_"+tgt, "w").close()
+    d_fd = open("./interim_"+tgt, "a")
+    
+    # Open the source wordlist
+    s_fd = open("./"+tgt, "r")
+
+    # Open the existing syllable dictionary
+    if (exists("./syllable_"+tgt))
+        c_fd = open("./syllable_"+tgt, "r")
+    else:
+        c_fd = False
+    
+    for i,line in enumerate(s_fd):
+        if (c_fd):
+            comp = c_fd.readline().split(",")[0]
+            if (comp == line):
+                print("PASS: "+line)
+                continue
+        line = line.strip().lower()
+        d_fd.write(line+","+str(DownloadSyllable(line)))
+
+    d_fd.close()
+    s_fd.close()
+
 def DownloadSyllable(word):
     s = Scraper()
     resp = s.scrape("https://google.com/search?q=define%20"+word)
@@ -445,13 +471,6 @@ def DownloadSyllable(word):
         print(word,",",str(-1))
         return -1
     del s
-
-def BuildDict(tgt):
-    open("./interim_"+tgt, "w").close()
-    with open("./"+tgt) as s_fd, open("./interim_"+tgt, "a") as d_fd:
-        for i,line in enumerate(s_fd):
-            line = line.strip().lower()
-            d_fd.write(line+","+str(DownloadSyllable(line)))
 
 if (__name__ == "__main__"):
     # BuildSyllableDictionary()
