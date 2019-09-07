@@ -2,7 +2,7 @@
 
 # Imports
 from re import findall # Vowel count
-from scraper import scrape, getHeaders # Web scraper
+# from scraper import scrape, getHeaders # Web scraper
 from os.path import exists # File operations
 from os import remove # Migrating files
 from datetime import datetime # Runtime
@@ -383,6 +383,10 @@ def BuildSyllableDictionary():
 
     remove("./out.txt.bak")
 
+#################
+### A new try ###
+#################
+
 # Method: SplitUpWordlist
 # Purpose: Break wordlist into chunks by letter of alphabet
 # Parameters: none.
@@ -410,13 +414,47 @@ def SplitUpWordlist():
 # Parameters: none.
 def BuildSyllableDictionaryWithMultiprocessing():
     # Find all files source files.
-    files = [x for x in listdir("./") if ".txt" in x and len(x) == 5]
+    files = [x for x in listdir("./") if ".txt" in x and len(x) == 5 and x[0] not in "ab"]
     
-    # # Use multithreading to speed up capturing syllables for entire dictionary
-    # with Pool() as pool:
-    #     pool.map(BuildDict, files)
+    # Use multithreading to speed up capturing syllables for entire dictionary
+    with Pool() as pool:
+        pool.map(BuildDict, files)
 
+def DownloadSyllable(word):
+    from scraper import scrape
+    resp = scrape("https://google.com/search?q=define%20"+word)
+    if ('<span data-dobid="hdw">' in resp):
+        resp = resp.split('<span data-dobid="hdw">',1)[1].split("</span>",1)[0]
+        print(word,",",resp.count("·")+1)
+        return resp.count("·")+1
+    elif ('<div data-hveid="20">' in resp):
+        resp = resp.split('<div data-hveid="20">',1)[1].split(">",1)[1].split("<",1)[0]
+        print(word,",",resp.count("·")+1)
+        return resp.count("·")+1
+    else:
+        resp = ""
 
+    if (resp == ""):
+        resp = scrape("https://www.howmanysyllables.com/words/"+word)
+    
+    if ('<p id="SyllableContentContainer">' in resp and '<span class="Answer_Red">' in resp.split('<p id="SyllableContentContainer">',1)[1]):
+        resp = resp.split('<p id="SyllableContentContainer">',1)[1].split('<span class="Answer_Red">',1)[1].split('</span>',1)[0]
+        print(word,",",resp.count("-")+1)
+        return resp.count("-")+1
+    else:
+        print(word,",",str(-1))
+        return -1
+
+def BuildDict(tgt):
+    s_fd = open("./"+tgt)
+    open("./syllables_"+tgt, "w").close()
+    d_fd = open("./syllables_"+tgt, "a")
+
+    for i,line in enumerate(s_fd):
+        line = line.strip().lower()
+        d_fd.write(line+","+str(DownloadSyllable(line)))
+    s_fd.close()
+    d_fd.close()
 
 if (__name__ == "__main__"):
     # BuildSyllableDictionary()
