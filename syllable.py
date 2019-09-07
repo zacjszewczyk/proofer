@@ -481,8 +481,21 @@ def DownloadSyllable(word):
         return -1
     del s
 
+def Recover():
+    files = [x for x in listdir("./") if ".txt" in x and "interim" in x]
+    for tgt in files:
+        s_fd = open("./"+tgt, "r")
+        d_fd = open("./"+tgt.replace("interim", "syllable"), "a+")
+
+        for i,line in enumerate(s_fd):
+            d_fd.write(line)
+
+        d_fd.close()
+        s_fd.close()
+
 if (__name__ == "__main__"):
     # BuildSyllableDictionary()
     # FindConflicts("sylco")
     # SplitUpWordlist()
-    BuildSyllableDictionaryWithMultiprocessing()
+    # BuildSyllableDictionaryWithMultiprocessing()
+    Recover()
