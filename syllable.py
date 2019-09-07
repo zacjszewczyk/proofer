@@ -422,43 +422,56 @@ def BuildSyllableDictionaryWithMultiprocessing():
 
 def BuildDict(tgt):
     # Clear an interim output file, then open for appending
-    open("./interim_"+tgt, "w").close()
-    d_fd = open("./interim_"+tgt, "a")
-    
+    open("./interim_" + tgt, "w").close()
+    d_fd = open("./interim_" + tgt, "a")
+
     # Open the source wordlist
-    s_fd = open("./"+tgt, "r")
+    s_fd = open("./" + tgt, "r")
 
     # Open the existing syllable dictionary
-    if (exists("./syllable_"+tgt))
-        c_fd = open("./syllable_"+tgt, "r")
+    if (exists("./syllable_" + tgt)):
+        c_fd = open("./syllable_" + tgt, "r")
     else:
         c_fd = False
-    
-    for i,line in enumerate(s_fd):
+
+    for i, line in enumerate(s_fd):
+        line = line.strip()
         if (c_fd):
             comp = c_fd.readline().split(",")[0]
+            # print(comp,line)
             if (comp == line):
-                print("PASS: "+line)
+                print("PASS: " + line)
                 continue
         line = line.strip().lower()
-        d_fd.write(line+","+str(DownloadSyllable(line)))
+        d_fd.write(line + "," + str(DownloadSyllable(line)) + '\n')
+
+    d_fd.close()
+    s_fd.close()
+    if (c_fd):
+        c_fd.close()
+
+    s_fd = open("./interim_" + tgt, "a")
+    d_fd = open("./" + tgt, "a")
+    for i,line in enumerate(s_fd):
+        d_fd.write(line)
 
     d_fd.close()
     s_fd.close()
 
 def DownloadSyllable(word):
     s = Scraper()
-    resp = s.scrape("https://google.com/search?q=define%20"+word)
-    if ('<span data-dobid="hdw">' in resp):
-        resp = resp.split('<span data-dobid="hdw">',1)[1].split("</span>",1)[0]
-        print(word,",",resp.count("·")+1)
-        return resp.count("·")+1
-    elif ('<div data-hveid="20">' in resp):
-        resp = resp.split('<div data-hveid="20">',1)[1].split(">",1)[1].split("<",1)[0]
-        print(word,",",resp.count("·")+1)
-        return resp.count("·")+1
-    else:
-        resp = ""
+    # resp = s.scrape("https://google.com/search?q=define%20"+word)
+    # if ('<span data-dobid="hdw">' in resp):
+    #     resp = resp.split('<span data-dobid="hdw">',1)[1].split("</span>",1)[0]
+    #     print(word,",",resp.count("·")+1)
+    #     return resp.count("·")+1
+    # elif ('<div data-hveid="20">' in resp):
+    #     resp = resp.split('<div data-hveid="20">',1)[1].split(">",1)[1].split("<",1)[0]
+    #     print(word,",",resp.count("·")+1)
+    #     return resp.count("·")+1
+    # else:
+    #     resp = ""
+    resp = ""
 
     if (resp == ""):
         resp = s.scrape("https://www.howmanysyllables.com/words/"+word)
@@ -476,4 +489,4 @@ if (__name__ == "__main__"):
     # BuildSyllableDictionary()
     # FindConflicts("sylco")
     # SplitUpWordlist()
-    # BuildSyllableDictionaryWithMultiprocessing()
+    BuildSyllableDictionaryWithMultiprocessing()
