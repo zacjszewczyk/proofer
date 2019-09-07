@@ -2,7 +2,7 @@
 
 # Imports
 from re import findall # Vowel count
-# from scraper import scrape, getHeaders # Web scraper
+from scraper import Scraper # Web scraper
 from os.path import exists # File operations
 from os import remove # Migrating files
 from datetime import datetime # Runtime
@@ -421,8 +421,8 @@ def BuildSyllableDictionaryWithMultiprocessing():
         pool.map(BuildDict, files)
 
 def DownloadSyllable(word):
-    from scraper import scrape
-    resp = scrape("https://google.com/search?q=define%20"+word)
+    s = Scraper()
+    resp = s.scrape("https://google.com/search?q=define%20"+word)
     if ('<span data-dobid="hdw">' in resp):
         resp = resp.split('<span data-dobid="hdw">',1)[1].split("</span>",1)[0]
         print(word,",",resp.count("·")+1)
@@ -435,7 +435,7 @@ def DownloadSyllable(word):
         resp = ""
 
     if (resp == ""):
-        resp = scrape("https://www.howmanysyllables.com/words/"+word)
+        resp = s.scrape("https://www.howmanysyllables.com/words/"+word)
     
     if ('<p id="SyllableContentContainer">' in resp and '<span class="Answer_Red">' in resp.split('<p id="SyllableContentContainer">',1)[1]):
         resp = resp.split('<p id="SyllableContentContainer">',1)[1].split('<span class="Answer_Red">',1)[1].split('</span>',1)[0]
@@ -444,20 +444,17 @@ def DownloadSyllable(word):
     else:
         print(word,",",str(-1))
         return -1
+    del s
 
 def BuildDict(tgt):
-    s_fd = open("./"+tgt)
-    open("./syllables_"+tgt, "w").close()
-    d_fd = open("./syllables_"+tgt, "a")
-
-    for i,line in enumerate(s_fd):
-        line = line.strip().lower()
-        d_fd.write(line+","+str(DownloadSyllable(line)))
-    s_fd.close()
-    d_fd.close()
+    open("./interim_"+tgt, "w").close()
+    with open("./"+tgt) as s_fd, open("./interim_"+tgt, "a") as d_fd:
+        for i,line in enumerate(s_fd):
+            line = line.strip().lower()
+            d_fd.write(line+","+str(DownloadSyllable(line)))
 
 if (__name__ == "__main__"):
     # BuildSyllableDictionary()
     # FindConflicts("sylco")
     # SplitUpWordlist()
-    BuildSyllableDictionaryWithMultiprocessing()
+    # BuildSyllableDictionaryWithMultiprocessing()
