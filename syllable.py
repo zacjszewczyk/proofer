@@ -429,21 +429,17 @@ def BuildDict(tgt):
     s_fd = open("./" + tgt, "r")
 
     # Open the existing syllable dictionary
-    if (exists("./syllable_" + tgt)):
-        c_fd = open("./syllable_" + tgt, "r")
-    else:
-        c_fd = False
+    c_fd = open("./syllable_" + tgt, "r")
 
     for i, line in enumerate(s_fd):
         line = line.strip()
-        if (c_fd):
-            comp = c_fd.readline().split(",")[0]
-            # print(comp,line)
-            if (comp == line):
-                print("PASS: " + line)
-                continue
+        comp = c_fd.readline().split(",")[0]
+        # print(comp,line)
+        if (comp == line):
+            print("PASS: " + line)
+            continue
         line = line.strip().lower()
-        d_fd.write(line + "," + str(DownloadSyllable(line)) + '\n')
+        d_fd.write(line + "," + str(DownloadSyllable(line)) + '\n')        
 
     d_fd.close()
     s_fd.close()
