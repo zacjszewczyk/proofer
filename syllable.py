@@ -6,6 +6,8 @@ from scraper import scrape, getHeaders # Web scraper
 from os.path import exists # File operations
 from os import remove # Migrating files
 from datetime import datetime # Runtime
+from multiprocessing import Pool # Multiprocessing
+from os import listdir
 
 # Method: sylco
 # Purpose: Accept a word and return the number of syllables
@@ -381,6 +383,43 @@ def BuildSyllableDictionary():
 
     remove("./out.txt.bak")
 
+# Method: SplitUpWordlist
+# Purpose: Break wordlist into chunks by letter of alphabet
+# Parameters: none.
+def SplitUpWordlist():
+    wordlist_fd = open("/usr/share/dict/words", "r")
+    
+    alphabet = []
+    for i,line in enumerate(wordlist_fd):
+        line = line.strip().lower()
+        if (line[0] not in alphabet):
+            try:
+                d_fd.close()
+            except:
+                pass
+            open("./"+line[0]+".txt", "w").close()
+            d_fd = open("./"+line[0]+".txt", "a")
+            d_fd.write(line+'\n')
+        else:
+            d_fd.write(line+'\n')
+
+    wordlist_fd.close()
+
+# Method: BuildSyllableDictionaryWithMultiprocessing
+# Purpose: Enrich wordlist with syllables from dictionary, with multiprocessing
+# Parameters: none.
+def BuildSyllableDictionaryWithMultiprocessing():
+    # Find all files source files.
+    files = [x for x in listdir("./") if ".txt" in x and len(x) == 5]
+    
+    # # Use multithreading to speed up capturing syllables for entire dictionary
+    # with Pool() as pool:
+    #     pool.map(BuildDict, files)
+
+
+
 if (__name__ == "__main__"):
-    BuildSyllableDictionary()
+    # BuildSyllableDictionary()
     # FindConflicts("sylco")
+    # SplitUpWordlist()
+    BuildSyllableDictionaryWithMultiprocessing()
