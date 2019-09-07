@@ -331,6 +331,9 @@ def BuildSyllableDictionary():
     for i, word in enumerate(s_fd):
         word = word.lower().strip()
 
+        if (word[0] == "c"):
+            break
+
         comp = c_fd.readline().split(",")[0].strip()
 
         if (word == comp):
@@ -366,9 +369,6 @@ def BuildSyllableDictionary():
             # error_fd.close()
             print(word,",",-1)
             d_fd.write(word+","+str(-1)+'\n')
-
-        if (i > 25000):
-            break
         
     s_fd.close()
     d_fd.close()
