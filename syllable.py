@@ -692,10 +692,12 @@ if (__name__ == "__main__"):
     # CombineWordlists("webS")
 
     # Oh no! The original wordlist has 235,886 entries, but the syllable
-    # dictionary only has 235,883. Let's find the differences.
+    # dictionary only has 235,883. Let's find those 3 differences.
     CompareWordlists("/usr/share/dict/words", "./webS")
 
     # It turns out, most wordlist groups started with a capital letter and then
-    # the lowercase version, i.e. line 1, A; line 2, a. Since I transformed 
-    # these lines to ignore capitalization, the sub-wordlists were missing a
-    # "b", "c", and "w".
+    # the lowercase version, i.e. line 1: A; line 2: a. Since I transformed 
+    # these lines to ignore capitalization and then had to recover temp files
+    # a few times, the sub-wordlists were missing a "b", "c", and "w" that the
+    # Recover function did not write to the syllable dictionary, because it saw
+    # them already there. A quick fix and voila, a syllable-enriched wordlist.
