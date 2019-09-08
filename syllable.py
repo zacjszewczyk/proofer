@@ -400,9 +400,11 @@ def BuildSyllableDictionary():
     # Delete temp file
     remove("./syllable_dictionary.txt.bak")
 
-#################
-### A new try ###
-#################
+
+###############################################################################
+########################## The old ^ meets the new ˅ ##########################
+###############################################################################
+
 
 # Method: SplitUpWordlist
 # Purpose: Break wordlist into sub-wordlists by letter of alphabet
@@ -662,6 +664,10 @@ def CompareWordlists(master, syl):
 if (__name__ == "__main__"):
     # Build the syllable dictionary.
     # BuildSyllableDictionary()
+
+    ###########################################################################
+    ######################## The old ^ meets the new ˅ ########################
+    ###########################################################################
 
     # That was super slow! So let's split up the wordlist so we can give
     # sub-wordlists to each processor.
