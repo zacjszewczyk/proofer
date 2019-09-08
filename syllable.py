@@ -322,6 +322,9 @@ def FindConflicts(tgt):
 # Purpose: Enrich wordlist with true syllables from a dictionary
 # Parameters: none.
 def BuildSyllableDictionary():
+    # Create a new instance of the web scraper
+    s = Scraper()
+
     # Open the wordlist
     s_fd = open("/usr/share/dict/words", "r")
 
@@ -352,7 +355,7 @@ def BuildSyllableDictionary():
         # Query Google for the definition of the wordlist's word. Depending on
         # the user agent string, the number of syllables may be in a span or
         # div. If neither element is in the response, try another source.
-        resp = scrape("https://google.com/search?q=define%20"+word)
+        resp = s.scrape("https://google.com/search?q=define%20"+word)
         if ('<span data-dobid="hdw">' in resp):
             resp = resp.split('<span data-dobid="hdw">',1)[1].split("</span>",1)[0]
             print(word,",",resp.count("·")+1)
@@ -369,7 +372,7 @@ def BuildSyllableDictionary():
         # If Google does not have a syllable breakdown for the target word,
         # try HowManySyllables.com.
         if (resp == ""):
-            resp = scrape("https://www.howmanysyllables.com/words/"+word)
+            resp = s.scrape("https://www.howmanysyllables.com/words/"+word)
         
         # If the response contains a certain paragraph, parse the number of
         # syllables. If not all has failed, so return -1 for the syllable count
@@ -397,8 +400,9 @@ def BuildSyllableDictionary():
     s_fd.close()
     d_fd.close()
 
-    # Delete temp file
+    # Cleanup
     remove("./syllable_dictionary.txt.bak")
+    del s
 
 
 ###############################################################################
