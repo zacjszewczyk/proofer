@@ -503,5 +503,16 @@ if (__name__ == "__main__"):
     files = [x for x in listdir("./") if ".txt" in x and len(x) == 5]
     for tgt in files:
         print("Source:",tgt)
-        print("Dest:","syllable_"+tgt)
-        print()
+        print("Sylls:","syllable_"+tgt)
+        source_fd = open("./"+tgt, "r")
+        if (not exists("./syllable_"+tgt)):
+            print("File '%s' does not exist." % ("./syllable_"+tgt))
+            continue
+        sylls_fd = open("./syllable_"+tgt, "r")
+        for i,source_line in enumerate(source_fd):
+            source_line = source_line.strip().lower()
+            sylls_line = sylls_fd.readline().split(",")[0].strip().lower()
+            if (source_line != sylls_line):
+                print(source_line,":",sylls_line)
+        source_fd.close()
+        sylls_fd.close()
