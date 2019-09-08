@@ -432,8 +432,8 @@ def BuildDict(tgt):
     c_fd = open("./syllable_" + tgt, "r")
 
     for i, line in enumerate(s_fd):
-        line = line.strip()
-        comp = c_fd.readline().split(",")[0]
+        line = line.strip().lower()
+        comp = c_fd.readline().split(",")[0].strip().lower()
         # print(comp,line)
         if (comp == line):
             print("PASS: " + line)
@@ -497,5 +497,5 @@ if (__name__ == "__main__"):
     # BuildSyllableDictionary()
     # FindConflicts("sylco")
     # SplitUpWordlist()
-    # BuildSyllableDictionaryWithMultiprocessing()
-    Recover()
+    BuildSyllableDictionaryWithMultiprocessing()
+    # Recover()

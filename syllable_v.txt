@@ -679,7 +679,8 @@ vascularly,4
 vasculated,-1
 vasculature,4
 vasculiferous,-1
-vasculiform,-1vasculitis,4
+vasculiform,-1
+vasculitis,4
 vasculogenesis,-1
 vasculolymphatic,-1
 vasculomotor,-1
