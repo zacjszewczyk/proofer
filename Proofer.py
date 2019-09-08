@@ -127,6 +127,7 @@ def SyllableCount(word):
     # calculate the output
     return numVowels - disc + syls
 
+# Will probably rewrite this. Regex for all HTML tags: (<[^>]+>)|(&[^;]+;)
 # Method: GenFile
 # Purpose: Generate an HTML file for proofing
 # Parameters:
