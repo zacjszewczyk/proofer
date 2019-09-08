@@ -622,16 +622,42 @@ def CombineWordlists(name):
     # Open each wordlist and write its contents to the master wordlist.
     for sub_wordlist in files:
         sub_fd = open("./"+sub_wordlist, "r")
-
         for i,line in enumerate(sub_fd):
             master_fd.write(line)
-
         # Close file
         sub_fd.close()
-        break
     # Close file
     master_fd.close()
 
+# Method: CompareWordlists
+# Purpose: Compare master wordlist with syllable dictionary.
+# Parameters:
+# - master: File path for the master wordlist (String)
+# - syl: File path for the syllable dictionary (String)
+def CompareWordlists(master, syl):
+    # Open the wordlists
+    master_fd = open(master, "r")
+    syl_fd = open(syl, "r")
+
+    # Enumerate the master wordlist
+    for i,master_line in enumerate(master_fd):
+        # Read a line from the syllable dictionary
+        syl_line = syl_fd.readline()
+
+        # Transform the lines for comparison
+        master_line = master_line.lower().strip()
+        syl_line = syl_line.split(",")[0].strip()
+
+        # Compare the two lines
+        if (master_line != syl_line):
+            # Print the line number and the different words
+            print("Line %d: master '%s' vs syllable dictionary '%s'" % (i, master_line, syl_line))
+            # Exit so we can fix this line, then re-run
+            break
+
+    # Close files
+    master_fd.close()
+    syl_fd.close()
 
 if (__name__ == "__main__"):
     # Build the syllable dictionary.
@@ -653,4 +679,13 @@ if (__name__ == "__main__"):
 
     # Now that we know the syllable wordlists are good to go, combine them into
     # a single file. Since the source was "web2", we'll call ours "webS".
-    CombineWordlists("webS")
+    # CombineWordlists("webS")
+
+    # Oh no! The original wordlist has 235,886 entries, but the syllable
+    # dictionary only has 235,883. Let's find the differences.
+    CompareWordlists("/usr/share/dict/words", "./webS")
+
+    # It turns out, most wordlist groups started with a capital letter and then
+    # the lowercase version, i.e. line 1, A; line 2, a. Since I transformed 
+    # these lines to ignore capitalization, the sub-wordlists were missing a
+    # "b", "c", and "w".
