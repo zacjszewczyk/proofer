@@ -499,3 +499,9 @@ if (__name__ == "__main__"):
     # SplitUpWordlist()
     # BuildSyllableDictionaryWithMultiprocessing()
     # Recover()
+
+    files = [x for x in listdir("./") if ".txt" in x and len(x) == 5]
+    for tgt in files:
+        print("Source:",tgt)
+        print("Dest:","syllable_"+tgt)
+        print()
