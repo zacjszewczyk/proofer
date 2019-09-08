@@ -497,5 +497,5 @@ if (__name__ == "__main__"):
     # BuildSyllableDictionary()
     # FindConflicts("sylco")
     # SplitUpWordlist()
-    BuildSyllableDictionaryWithMultiprocessing()
+    # BuildSyllableDictionaryWithMultiprocessing()
     # Recover()
