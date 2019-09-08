@@ -292,7 +292,7 @@ def NewSyllableCount(word):
 def FindConflicts(tgt):
     t1 = datetime.now()
     
-    fd = open("./out.txt", "r")
+    fd = open("./syllable_dictionary.txt", "r")
     for i, line in enumerate(fd):
         word, dsyl = line.split(",")
         dsyl = dsyl.strip()
@@ -322,26 +322,36 @@ def FindConflicts(tgt):
 # Purpose: Enrich wordlist with true syllables from a dictionary
 # Parameters: none.
 def BuildSyllableDictionary():
+    # Open the wordlist
     s_fd = open("/usr/share/dict/words", "r")
 
-    if (not exists("./out.txt")):
-        open("./out.txt", "w").close()
+    # Create the syllable dictionary file if it does not exist.
+    if (not exists("./syllable_dictionary.txt")):
+        open("./syllable_dictionary.txt", "w").close()
+    
+    # Open the syllable dictionary
+    c_fd = open("./syllable_dictionary.txt", "r")
 
-    open("./out.txt.bak", "w").close()
-    d_fd = open("./out.txt.bak", "a")
-    c_fd = open("./out.txt", "r")
+    # Clear and open a temporary output syllable dictionary, to write to.
+    open("./syllable_dictionary.txt.bak", "w").close()
+    d_fd = open("./syllable_dictionary.txt.bak", "a")
+    
+    # Enumerate the wordlist
     for i, word in enumerate(s_fd):
+        # Convert wordlist word to lowercase and strip newline
         word = word.lower().strip()
 
-        if (word[0] == "c"):
-            break
-
+        # Read a line from the syllable dictionary
         comp = c_fd.readline().split(",")[0].strip()
 
+        # If the word in the wordlist has already been added to the syllable
+        # dictionary, skip it.
         if (word == comp):
-            print("PASS:",word)
             continue
 
+        # Query Google for the definition of the wordlist's word. Depending on
+        # the user agent string, the number of syllables may be in a span or
+        # div. If neither element is in the response, try another source.
         resp = scrape("https://google.com/search?q=define%20"+word)
         if ('<span data-dobid="hdw">' in resp):
             resp = resp.split('<span data-dobid="hdw">',1)[1].split("</span>",1)[0]
@@ -356,32 +366,33 @@ def BuildSyllableDictionary():
         else:
             resp = ""
 
+        # If Google does not have a syllable breakdown for the target word,
+        # try HowManySyllables.com.
         if (resp == ""):
             resp = scrape("https://www.howmanysyllables.com/words/"+word)
         
+        # If the response contains a certain paragraph, parse the number of
+        # syllables. If not all has failed, so return -1 for the syllable count
         if ('<p id="SyllableContentContainer">' in resp and '<span class="Answer_Red">' in resp.split('<p id="SyllableContentContainer">',1)[1]):
             resp = resp.split('<p id="SyllableContentContainer">',1)[1].split('<span class="Answer_Red">',1)[1].split('</span>',1)[0]
             print(word,",",resp.count("-")+1)
             d_fd.write(word+","+str(resp.count("-")+1)+'\n')
         else:
-            # open("error.html", "w").close()
-            # error_fd = open("error.html", "a")
-            # error_fd.write(resp)
-            # error_fd.write('\n'+getHeaders())
-            # error_fd.close()
             print(word,",",-1)
             d_fd.write(word+","+str(-1)+'\n')
-        
+
+    # Close all files
     s_fd.close()
     d_fd.close()
     c_fd.close()
 
-    s_fd = open("./out.txt.bak", "r")
-    d_fd = open("./out.txt", "a")
+    # Append the temporary syllable dictionary to the actual
+    # syllable dictionary, then remove the temp file.
+    s_fd = open("./syllable_dictionary.txt.bak", "r")
+    d_fd = open("./syllable_dictionary.txt", "a")
     for i,line in enumerate(s_fd):
         d_fd.write(line)
-
-    remove("./out.txt.bak")
+    remove("./syllable_dictionary.txt.bak")
 
 #################
 ### A new try ###
@@ -480,7 +491,7 @@ def DownloadSyllable(word):
         return -1
     del s
 
-def Recover():
+def RecoverFromError():
     files = [x for x in listdir("./") if ".txt" in x and "interim" in x]
     for tgt in files:
         s_fd = open("./"+tgt, "r")
@@ -492,17 +503,9 @@ def Recover():
         d_fd.close()
         s_fd.close()
 
-if (__name__ == "__main__"):
-    # BuildSyllableDictionary()
-    # FindConflicts("sylco")
-    # SplitUpWordlist()
-    # BuildSyllableDictionaryWithMultiprocessing()
-    # Recover()
-
-    files = [x for x in listdir("./") if ".txt" in x and len(x) == 5]
+def FinalCheck():
+    files = sorted([x for x in listdir("./") if ".txt" in x and len(x) == 5])
     for tgt in files:
-        # print("Source:",tgt)
-        # print("Sylls:","syllable_"+tgt)
         source_fd = open("./"+tgt, "r")
         if (not exists("./syllable_"+tgt)):
             print("File '%s' does not exist." % ("./syllable_"+tgt))
@@ -513,7 +516,7 @@ if (__name__ == "__main__"):
             source_line = source_line.strip().lower()
             sylls_line = sylls_fd.readline().split(",")[0].strip().lower()
             if (source_line != sylls_line):
-                print(source_line,":",sylls_line)
+                print("Source line %d, '%s', and syllable dictionary line, '%s', do not match." % (i, source_line, sylls_line))
                 notTheSame = True
         source_fd.close()
         sylls_fd.close()
@@ -521,3 +524,11 @@ if (__name__ == "__main__"):
             print(tgt,"and","./syllable_"+tgt+" are not the same.")
         else:
             print(tgt,"and","./syllable_"+tgt+" ARE the same.")
+
+if (__name__ == "__main__"):
+    # BuildSyllableDictionary()
+    # FindConflicts("sylco")
+    # SplitUpWordlist()
+    # BuildSyllableDictionaryWithMultiprocessing()
+    # RecoverFromError()
+    FinalCheck()
