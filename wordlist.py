@@ -382,7 +382,7 @@ if (__name__ == "__main__"):
 
     # Oh no! The original wordlist has 235,886 entries, but the syllable
     # dictionary only has 235,883. Let's find those 3 differences.
-    CompareWordlists("/usr/share/dict/words", "./webS")
+    # CompareWordlists("/usr/share/dict/words", "./webS")
 
     # It turns out, most wordlist groups started with a capital letter and then
     # the lowercase version, i.e. line 1: A; line 2: a. Since I transformed 
@@ -390,3 +390,12 @@ if (__name__ == "__main__"):
     # a few times, the sub-wordlists were missing a "b", "c", and "w" that the
     # Recover function did not write to the syllable dictionary, because it saw
     # them already there. A quick fix and voila, a syllable-enriched wordlist.
+
+    fd = open("./webS", "r")
+
+    for i,line in enumerate(fd):
+        word,sylls = [x.strip() for x in line.split(",")]
+        print(word)
+        print(sylls)
+
+    fd.close()
