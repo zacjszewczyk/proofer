@@ -394,8 +394,11 @@ if (__name__ == "__main__"):
     fd = open("./webS", "r")
 
     for i,line in enumerate(fd):
-        word,sylls = [x.strip() for x in line.split(",")]
-        print(word)
-        print(sylls)
+        line = line.split(",")
+        word = line[0].strip()
+        sylls = int(line[1])
+        
+        if (sylls == -1):
+            print(word)
 
     fd.close()
