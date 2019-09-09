@@ -354,6 +354,69 @@ def CompareWordlists(master, syl):
     master_fd.close()
     syl_fd.close()
 
+# Method: FindNoSyllables
+# Purpose: Find the words for which the dictionary does not count syllables
+# Parameters: none.
+def FindNoSyllables():
+    # Open the syllable wordlist
+    s_fd = open("./webS", "r")
+
+    # Keep track of the number of words without syllable counts
+    count = 0
+
+    # Enumerate the wordlist.
+    for i,line in enumerate(s_fd):
+        # Get the word and it's syllable count
+        line = line.split(",")
+        word = line[0].strip()
+        sylls = int(line[1])
+        
+        # If the word has no syllable count, notify user and update total
+        if (sylls == -1):
+            print(word)
+            count += 1
+    
+    # Close file
+    s_fd.close()
+
+    # Print count for user
+    print(count,"records found.")
+
+# Method: FindNoSyllablesAndNotProperNouns
+# Purpose: Find words without syllable counts, that aren't proper nouns
+# Parameters: none.
+def FindNoSyllablesAndNotProperNouns():
+    # Open the syllable wordlist, and the master wordlist
+    s_fd = open("./webS", "r")
+    w_fd = open("/usr/share/dict/words", "r")
+
+    # Keep track of the number of words without syllable counts that are
+    # not proper nouns.
+    count = 0
+
+    # Enumerate the wordlist.
+    for i,line in enumerate(s_fd):
+        # Get the word and it's syllable count
+        line = line.split(",")
+        word = line[0].strip()
+        sylls = int(line[1])
+
+        # Get the word from the master wordlist
+        m_word = w_fd.readline().strip()
+        
+        # If the word has no syllable count, see if it's a proper noun
+        if (sylls == -1):
+            if (not m_word[0].isupper()):
+                print("Syllable: %s ; Wordlist: %s" % (word, m_word))
+                count += 1
+    
+    # Close files
+    s_fd.close()
+    w_fd.close()
+
+    # Print count for user
+    print(count,"records found.")
+
 if (__name__ == "__main__"):
     # Build the syllable dictionary.
     # BuildSyllableDictionary()
@@ -390,3 +453,15 @@ if (__name__ == "__main__"):
     # a few times, the sub-wordlists were missing a "b", "c", and "w" that the
     # Recover function did not write to the syllable dictionary, because it saw
     # them already there. A quick fix and voila, a syllable-enriched wordlist.
+
+    # Failing to find a syllable count from a dictionary, the default was -1.
+    # Let's see how many got assigned that value.
+    # FindNoSyllables()
+
+    # 102,461! That's almost half, out of a total of 235,886. Not great. A
+    # cursory look through that list, though, revealed that they appear to be,
+    # for the most part, proper nouns. Let's check.
+    FindNoSyllablesAndNotProperNouns()
+
+    # 85,524 left. Just by checking for proper nouns alone, we ruled out 16,937
+    # that, of course, will be in no dictionary. But what about the rest?
