@@ -459,9 +459,16 @@ if (__name__ == "__main__"):
     # FindNoSyllables()
 
     # 102,461! That's almost half, out of a total of 235,886. Not great. A
-    # cursory look through that list, though, revealed that they appear to be,
-    # for the most part, proper nouns. Let's check.
-    FindNoSyllablesAndNotProperNouns()
+    # cursory look through that list, though, revealed that many appear to be
+    # proper nouns. Let's check.
+    # FindNoSyllablesAndNotProperNouns()
 
     # 85,524 left. Just by checking for proper nouns alone, we ruled out 16,937
     # words that, of course, will not be in a dictionary. What about the rest?
+    # Many are words with prefixes and suffixes whose roots exist in the
+    # dictionary, but that do not exist in their present form. Take
+    # "absenteeship", for example. Others are foreign words like "haori", which
+    # is a traditional Japanese jacket. "Pharyngotonsillitis" is a medical
+    # condition. Are these words? Yes. Am I concerned about testing my syllable
+    # counter against them? No. Whether it counts seven syllables in
+    # pharyngotonsillitis or not, I will sleep just fine at night.
