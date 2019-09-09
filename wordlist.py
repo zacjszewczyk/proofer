@@ -390,15 +390,3 @@ if (__name__ == "__main__"):
     # a few times, the sub-wordlists were missing a "b", "c", and "w" that the
     # Recover function did not write to the syllable dictionary, because it saw
     # them already there. A quick fix and voila, a syllable-enriched wordlist.
-
-    fd = open("./webS", "r")
-
-    for i,line in enumerate(fd):
-        line = line.split(",")
-        word = line[0].strip()
-        sylls = int(line[1])
-        
-        if (sylls == -1):
-            print(word)
-
-    fd.close()
