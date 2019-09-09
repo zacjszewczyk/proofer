@@ -407,7 +407,7 @@ def FindNoSyllablesAndNotProperNouns():
         # If the word has no syllable count, see if it's a proper noun
         if (sylls == -1):
             if (not m_word[0].isupper()):
-                print("Syllable: %s ; Wordlist: %s" % (word, m_word))
+                print(word)
                 count += 1
     
     # Close files
@@ -464,4 +464,4 @@ if (__name__ == "__main__"):
     FindNoSyllablesAndNotProperNouns()
 
     # 85,524 left. Just by checking for proper nouns alone, we ruled out 16,937
-    # that, of course, will be in no dictionary. But what about the rest?
+    # words that, of course, will not be in a dictionary. What about the rest?
