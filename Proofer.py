@@ -51,7 +51,7 @@ def SyllableCount(word):
             else:
                 disc+=1
 
-    #3) discard trailing "e", except where ending is "le"  
+    #3) discard trailing "e", except where ending is "le"
     if word[-1:] == "e" :
         if word[-2:] == "le" and word not in ['whole','mobile','pole','male','female','hale','pale','tale','sale','aisle','whale','while']:
             pass
@@ -87,7 +87,7 @@ def SyllableCount(word):
         syls+=1
 
     #10) if ends with "-ian", should be counted as two syllables, except for "-tian" and "-cian"
-    if word[-3:] == "ian" : 
+    if word[-3:] == "ian" :
         if word[-4:] in ["cian", "tian"]:
             pass
         else :
@@ -122,7 +122,7 @@ def SyllableCount(word):
         disc+=1
     # exception_add are words that need extra syllables
     if word in ['serious','crucial']:
-        syls+=1     
+        syls+=1
 
     # calculate the output
     return numVowels - disc + syls
@@ -166,7 +166,7 @@ def GenFile(iname):
 
     # Open the source file
     fd = open(iname, "r")
-    
+
     # Read the title from the source file
     title = fd.readline().strip()
     if (title[0] == "#"):
@@ -174,7 +174,7 @@ def GenFile(iname):
         title = "<h2 class='linkpost'><a href=\""+title[1][:-3]+"\">"+title[0][3:]+"</a></h2>"
     else:
         title = "<h2 class='original'>"+title+"</h2>\n"
-    
+
     # Get rid of the title separator (=) and the following blank line
     fd.readline()
 
@@ -189,7 +189,7 @@ def GenFile(iname):
 
         # Save a "backup" of the line, for searching a sanitized version of it
         backup = line
-        
+
         # If we're looking at an empty line, just skip over it; else continue
         if (len(line.strip()) == 0):
             continue
@@ -201,12 +201,12 @@ def GenFile(iname):
                 block = True
             else:
                 block = False
-        
+
         # Do not collect stats on images. Write them to the file and move on.
         if (line[0:2] == "![" or line[0:4] == "<pre"):
             o_fd.write(Markdown(line, "https://zacs.site/")+"\n")
             continue
-        
+
         # Instantiate paragraph-specific statistics
         wc = 0 # Word count for current paragraph
         overused_words = 0 # Number of overused words
@@ -317,7 +317,7 @@ def GenFile(iname):
 
     # Write closing <article> tag
     o_fd.write("</article>")
-    
+
     # Sum the paragraph word counts into a single count, for document stats
     for num in word_count:
         total_word_count += int(num)
@@ -333,7 +333,6 @@ def GenFile(iname):
     # Calculate Flesch-Kincaid Readability Test
     # higher scores indicate material that is easier to read; lower numbers indicate difficulty.
     fkr = 206.835 - 1.015*(float(fk_wc)/float(total_sentences)) - 84.6*(float(syllable_count)/float(fk_wc))
-    print(type(fkr))
 
     if (fkr <= 30.0):
         fkr = "<span class='extreme'>%3.2f</span>" % (fkr)
@@ -371,6 +370,9 @@ if (__name__ == "__main__"):
         print("Provide valid file.")
         sys.exit(1)
 
+    # If there are two parameters, it's ./Proofer.py {FILENAME}, so monitor
+    # {FILENAME} for changes and update the HTML file live. If there are 3,
+    # it's ./Proofer.py {FILENAME} --exit, so just build the HTML file.
     if (len(sys.argv) != 3):
         f_s = []
 
@@ -381,7 +383,7 @@ if (__name__ == "__main__"):
             if (f_s == n_s):
                 sleep(2)
                 continue
-            
+
             # File has changed
             d = datetime.datetime.now()
             utime = "%d-%d-%d %d:%d:%d" % (d.year,d.month,d.day,d.hour,d.minute,d.second)
