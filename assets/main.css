@@ -32,7 +32,7 @@ footer { /** Assign footer to third row **/
 	height: 100%;
 	width: 100%;
 }
-#document_stats { /* Fill right gutter area with document statistics*/
+#rg { /* Fill right gutter area */
 	grid-area: rg;
 }
 
@@ -90,21 +90,34 @@ nav a {
 main {
 	overflow: hidden;
 }
-.tooltip .tooltiptext {
-    visibility: hidden;
-    background-color: #0f0f0f;
-    color: #fff;
-    text-align: center;
-    border-radius: 3px;
-    padding: 5px 10px;
-    position: absolute;
-    z-index: 1;
-    left:-50%;
-    margin-top:-5px;
-    font-size: 90%;
+.tooltip { /* Tooltip container */
+  position: relative;
+  display: inline-block;
 }
-.tooltip:hover .tooltiptext {
-    visibility: visible;
+.tooltip .tooltiptext { /* Tooltip text */
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  /* Position the tooltip text */
+  position: fixed;
+  z-index: 1;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+#document_stats .tooltip .tooltiptext {
+  position: absolute;
+  z-index: 1;
+  left:-100%;
+  margin-top:-5px;
+  min-width: 10em;
+}
+.tooltip:hover .tooltiptext { /* Show the tooltip text on hover */
+  visibility: visible;
 }
 #document_stats {
 	position: fixed;
@@ -219,6 +232,40 @@ ul li, ol li {
 	margin-top: 5em;
 	border-top: 1pt dashed;
 	padding-top: 2em;
+}
+.avoid, .alternate, .trite, .extreme, .hard, .tough, .plain, .fair, .easy, .simple, .dup {
+	padding: 1pt .25em 1pt .25em;
+	border-radius: 0.25em;
+}
+.avoid {
+	background-color: #ED9C9D99;
+}
+.alternate, .trite {
+	background-color: #A72BDD99;
+}
+.extreme {
+    background-color: #FF6666;
+}
+.hard {
+    background-color: #D77751;
+}
+.tough {
+    background-color: #C38047;
+}
+.plain {
+    background-color: #9B9233;
+}
+.fair {
+    background-color: #73A41E;
+}
+.easy {
+    background-color: #5FAD14;
+}
+.simple {
+    background-color: #37BF00;
+}
+.dup {
+	background-color: #91910f99;
 }
 
 /** Footer **/
