@@ -1,187 +1,92 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="description" content="Zac J. Szewczyk's personal lifestyle blog on adventuring, writing, weightlifting, and leadership, among other things."/>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="application-name" content="Zac Szewczyk">
+        <meta charset="utf-8">
+        <meta name="author" content="Zac J. Szewczyk">
+        <meta name="application-name" content="Proofer">
+        <meta name="keywords" content="proofing, proofer, writing, writing proofer, better writing, writing statistics, editor">
+        <meta name="description" content="Identify elements of weak writing.">
+        
+        <meta name="robots" content="index, follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"> 
         <meta name="referrer" content="no-referrer">
-        <meta name="theme-color" content="#518341"/>
+        <meta name="theme-color" content="#FFFFFF">
+        <link rel="stylesheet" href="assets/main.css">
         
-        <meta property="og:image" content="favicon.ico"/>
-        <meta property="og:title" content="{{ title }}"/>
-        <meta property="og:site_name" content="Zac J. Szewczyk"/>
-        <meta property="og:article:author" content="Zac J. Szewczyk"/>
-        <meta property="og:see_also" content="http://zacjszewczyk.com/"/>
-        
-        <link rel="manifest" href="Static/manifest.json"/>
-        <link rel="alternate" type="application/rss+xml" title="RSS Feed for Zac J. Szewczyk's Blog" href="/rss" />
-        <link rel="author" href="https://plus.google.com/109294852959769775608/about" />
-        <link rel="shortcut icon" href="/Static/favicon.ico" size="16x16" type="image/ico" />
-        <link rel="shortcut icon" href="/Static/favicon_192.ico" size="192x192" type="image/ico" />
-        <link rel="shortcut icon" href="/Static/favicon_512.ico" size="512x512" type="image/ico" />
-        
-        <link rel="stylesheet" href="main.css" type="text/css" />
-        <script type="text/javascript" src="assets/live.js"></script>
-        <title>
-            Proofer
-        </title>
-        <style type="text/css">
-            #document_stats {
-                border: 1px solid black;
-                position: fixed;
-                top: 50%;
-                right: 100px;
-                padding: 10px;
-                border-radius: 2px;
-            }
-            #document_stats h4 {
-                font-size: 14pt;
-                text-transform: uppercase;
-                margin-bottom: 5px;
-                line-height: 100%;
-            }
-            #document_stats div:first-of-type {
-                text-align: center;
-                font-size: 85%;
-                margin-bottom: 15px;
-                line-height: 125%;
-                opacity:.8;
-            }
-            #document_stats span {
-                font-weight: bold;
-            }
-            .floating_stats {
-                position: absolute;
-                left: 150px;
-            }
-            .floating_stats div, #document_stats p {
-                line-height: 150%;
-                margin: 0;
-                font-size: 12pt;
-            }
-            .avoid {
-                background-color: #eaea1c;
-            }
-            .avoid:hover {
-                background-color: #c8c81d;
-            }
-            .replace, .replace .avoid {
-                background-color: #f0bdff;
-            }
-            .replace:hover {
-                background-color: #ECDEF0;
-            }
-            .repeat {
-                background-color: #ff6666;
-            }
-            .replace, .repeat, .avoid, .extreme, .hard, .tough, .plain, .fair, .easy, .simple {
-                border-radius: 2px;
-                padding: 2px;
-            }
-            .extreme {
-                background-color: #FF6666;
-            }
-            .hard {
-                background-color: #D77751;
-            }
-            .tough {
-                background-color: #C38047;
-            }
-            .plain {
-                background-color: #9B9233;
-            }
-            .fair {
-                background-color: #73A41E;
-            }
-            .easy {
-                background-color: #5FAD14;
-            }
-            .simple {
-                background-color: #37BF00;
-            }
+        <meta property="og:image" content="/assets/images/favicon.ico">
+        <meta property="og:title" content="Proofer - Identify elements of weak writing.">
+        <meta property="og:site_name" content="Proofer">
+        <meta property="og:article:author" content="Zac J. Szewczyk">
+        <meta property="og:see_also" content="https://zacs.site/">
 
-            article>p, article>blockquote p {
-                min-height: 5em;
+        <link rel="shortcut icon" type="image/ico" size="16x16" href="assets/images/favicon.ico">
+        <link rel="shortcut icon" type="image/ico" size="192x192" href="assets/images/favicon_192.ico">
+        <link rel="shortcut icon" type="image/ico" size="512x512" href="assets/images/favicon_512.ico">
+        
+        <title>Proofer - Identify elements of weak writing.</title>
+        <script type="text/javascript">
+            function sleep(ms) {
+              return new Promise(resolve => setTimeout(resolve, ms));
             }
-            .tooltip .tooltiptext {
-                visibility: hidden;
-                background-color: #0f0f0f;
-                color: #fff;
-                text-align: center;
-                border-radius: 3px;
-                padding: 5px 10px;
-                position: absolute;
-                z-index: 1;
-                left:-50%;
-                margin-top:-5px;
-                font-size: 90%;
+            async function livePage() {
+                for (;;) {
+                    if (document.hasFocus()) {
+                        // console.log(document.hasFocus()+": "+Date.now()); // DEBUG
+                    }
+                    await sleep(5000);
+                    if (!document.hasFocus()) {
+                        // console.log("Reloading..."+Date.now()) // DEBUG
+                        location.reload();
+                    }
+                }
             }
-            .tooltip:hover .tooltiptext {
-                visibility: visible;
-            }
-            p:hover .complex_word {
-                color: red;
-            }
-        </style>
+            livePage();
+        </script>
     </head>
-    <body style="opacity:0.8;background-color:#F6F6F6;font-family:'Roboto',sans-serif;font-size:13pt;line-height:200%;" id="{{ BODYID }}">
-        <header style="text-align:center;font-size:150%;max-width:75em;margin:0 auto;"><!--BLOCK HEADER--></header>
-        <nav style="text-align:center;margin:10% 5%;font-size:15pt;line-height:200%;">
-            <a id="home_link" href="/">Home</a>
-            <a id="blog_link" href="/blog">Blog</a>
-            <a id="rss_link" href="/rss">RSS</a>
-            <a id="archives_link" href="/archives">Post Archives</a>
-            <a id="projects_link" href="/projects">Projects</a>
+    <body>
+        <nav>
+            <a href="" id="home_link">Home</a>
+            <a href="" id="blog_link">Blog</a>
+            <a href="" id="explore_link">Explore</a>
+            <a href="" id="rss_link">RSS</a>
+            <a href="" id="archives_link" rel="prefetch">Post Archives</a>
+            <a href="" id="projects_link">Projects</a>
+            <a href="" id="disclaimers_link">Disclaimers</a>
         </nav>
-        <main style="max-width:50em;margin:0 auto;margin-bottom:100px;">
-            <section id="content_section">
-                <!--Divider-->
-            </section>
-            <section id="document_stats">
-                <h4>Document Statistics</h4>
-                <div>
-                    <time datetime="%s" pubdate="pubdate">Built on %s</time>
-                </div>
-                <div>
-                    <p>Words: <span>%d</span></p>
-                    <p>Est. reading time: <span>%s</span></p>
-                    <p>Sentences: <span>%d</span></p>
-                    <p>Paragraphs: <span>%d</span></p>
-                    <p>Avg. words/paragraph: <span>%d</span></p>
-                    <p class="tooltip">Overused phrases: <span>%d</span><span class="tooltiptext"><a target="blank_" href="http://www.plainenglish.co.uk/the-a-z-of-alternative-words.html">Plain English Campaign</a></span></p>
-                    <p>Repeated words: <span>%d</span></p>
-                    <p class="tooltip">Words to avoid: <span>%d</span><span class="tooltiptext">"Be" verbs, and adverbs.</span></p>
-                    <p class="tooltip">Fog index: <span>%2.2f</span>&#8595;<span class="tooltiptext">The <a target="blank_" href="https://en.wikipedia.org/wiki/Gunning_fog_index">Gunning Fog Index</a> estimates the years of formal education needed to understand the text on a first reading.</span></p>
-                    <p class="tooltip">Reading ease: <span>%s</span>&#x2191;<span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid reading ease</a>: higher scores indicate material that is easier to read; lower numbers indicate difficulty.</span></p>
-                    <p class="tooltip">Grade level: <span>%3.2f</span>&#8595;<span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid grade level</a>: estimates the number of years of education generally required to understand this text.</span></p>
-                </div>
-            </section>
+        <main>
+<!-- DIVIDER -->
         </main>
-        <footer style="max-width:65em;margin:0 auto;margin-bottom:100px;">
-            <p>Follow me on <a href="http://twitter.com/zacjszewczyk">Twitter</a>, <a href="https://www.instagram.com/zacjszewczyk/">Instagram</a>, or subscribe to my <a href="/rss">RSS</a> feed.</p>
-            <p>&copy; 2012-2020 Zachary Szewczyk</p>
+        <section id="document_stats">
+            <h4>Document Statistics</h4>
+            <div>
+                <time datetime="%s" pubdate="pubdate">Built on {DTG}</time>
+            </div>
+            <div>
+                <p>Words: <span>{WORDS}</span></p>
+                <p>Est. reading time: <span>{READING_TIME}</span></p>
+                <p>Sentences: <span>{SENTENCES}</span></p>
+                <p>Paragraphs: <span>{PARAGRAPHS}</span></p>
+                <p>Avg. words/paragraph: <span>{AVG}</span></p>
+                <p class="tooltip">Overused phrases: <span>{OVERUSED_PHRASES}</span><span class="tooltiptext"><a target="blank_" href="http://www.plainenglish.co.uk/the-a-z-of-alternative-words.html">Plain English Campaign</a></span></p>
+                <p>Repeated words: <span>{REPEATED_WORDS}</span></p>
+                <p class="tooltip">Words to avoid: <span>{WORDS_TO_AVOID}</span><span class="tooltiptext">"Be" verbs, and adverbs.</span></p>
+                <p class="tooltip">Fog index: <span>{FOG_INDEX}</span>&#8595;<span class="tooltiptext">The <a target="blank_" href="https://en.wikipedia.org/wiki/Gunning_fog_index">Gunning Fog Index</a> estimates the years of formal education needed to understand the text on a first reading.</span></p>
+                <p class="tooltip">Reading ease: <span>{READING_EASE}</span>&#x2191;<span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid reading ease</a>: higher scores indicate material that is easier to read; lower numbers indicate difficulty.</span></p>
+                <p class="tooltip">Grade level: <span>{GRADE_LEVEL}</span>&#8595;<span class="tooltiptext"><a target="blank_" href="https://en.wikipedia.org/wiki/Flesch–Kincaid_readability_tests">Flesch–Kincaid grade level</a>: estimates the number of years of education generally required to understand this text.</span></p>
+            </div>
+        </section>
+        <footer>
+            <p>
+                Follow me on <a href="">Twitter</a>, <a href="">Instagram</a>, or subscribe to my <a href="">RSS</a> feed.
+            </p>
+            <p>
+                © 2012-2020 Zachary Szewczyk.
+            </p>
+            <p>
+                This work is licensed under a <a href="http://creativecommons.org/licenses/by/4.0/" rel="license">Creative Commons Attribution 4.0 International License</a>.
+            </p>
         </footer>
+        <div id="lg"></div>
+        <div id="rg"></div>
     </body>
-    <!-- SCRIPTS BLOCK -->
-    <script type="text/javascript">
-        classname = document.getElementsByClassName("repeat");
-        for (var i = 0; i < classname.length; i++) {
-            classname[i].addEventListener('mouseover', mouseOver, false);
-            classname[i].addEventListener('mouseout', mouseOut, false);
-        }
-
-        function mouseOver() {
-            classname = document.getElementsByClassName(this.className.split(" ")[1]);
-            for (var i = 0; i < classname.length; i++) {
-                classname[i].style.backgroundColor = "#C99199";
-            }
-        }
-        function mouseOut() {
-            classname = document.getElementsByClassName(this.className.split(" ")[1]);
-            for (var i = 0; i < classname.length; i++) {
-                classname[i].style.backgroundColor = "#ff6666";
-            }
-        }
-    </script>
 </html>

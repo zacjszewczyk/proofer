@@ -50,7 +50,7 @@ if (__name__ == "__main__"):
 
     # Make sure file exists
     if (not isfile(args.input_file)):
-        print(f"{c.FAIL}Error:{c.ENDC} File does not exist.")
+        print(f"{c.FAIL}Error:{c.ENDC} Input file does not exist.")
         exit(1)
 
     # Record start time
@@ -59,13 +59,16 @@ if (__name__ == "__main__"):
     # Otherwise, process the input file
     print(f"Processing {c.UNDERLINE}{args.input_file}{c.ENDC} ... ")
 
+    # Set document statistic variables
+    word_count, reading_time, sentence_count, paragraph_count, overused_phrase_count, repeated_word_count, avoid_word_count, fog_index, reading_ease, grade_level = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
     # Read the template
     fd = open("./assets/template.html", "r")
-    template = fd.read().split("<!--Divider-->")
+    template = fd.read().split("<!-- DIVIDER -->")
     fd.close()
 
     # Open the output file
-    if (not args.output_file):
+    if (args.output_file == None):
         args.output_file = "index.html"
     open(args.output_file, "w").close()
     outfile = open(args.output_file, "a")
@@ -91,12 +94,22 @@ if (__name__ == "__main__"):
             else:
                 title = line
 
-            outfile.write(f"{template[1]}\n{title}")
+            # Write opening HTML tags and title to output file
+            outfile.write(f"{template[0]}\n<article>\n<h2>{title}</h2>\n")
             continue
         
-        outfile.write(f"{line}\n")
+        # Process lines
+        if (len(line) == 0):
+            outfile.write("\n")
+        else:
+            paragraph_count += 1
+            outfile.write(f"<p>{line}</p>\n")
 
-    # Close file, record end time, and report execution time
-    infile.close()
+    else: # Write closing HTML tags and close files
+        outfile.write(f"</article>\n{template[1].format(DTG=t1, WORDS=word_count, READING_TIME=reading_time, SENTENCES=sentence_count, PARAGRAPHS=paragraph_count, AVG=(word_count/paragraph_count), OVERUSED_PHRASES=overused_phrase_count, REPEATED_WORDS=repeated_word_count, WORDS_TO_AVOID=avoid_word_count, FOG_INDEX=fog_index, READING_EASE=reading_ease, GRADE_LEVEL=grade_level)}\n")
+        infile.close()
+        outfile.close()
+
+    # Record end time, and report execution time
     t2 = datetime.now()
     print(f"Execution time: {c.BOLD}{(t2-t1).total_seconds()}s{c.ENDC}")
