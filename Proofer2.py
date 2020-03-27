@@ -5,7 +5,6 @@ import sys # CLI arguments
 import argparse # CLI argument parsing
 from os.path import isfile # Basic bounds checks
 from datetime import datetime # Runtime
-import nltk # Text processing
 from re import sub # Text processing
 from html import unescape
 sys.path.insert(0, '/Users/zjszewczyk/Dropbox/Code/Standalone')
