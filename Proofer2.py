@@ -1,7 +1,28 @@
 #!/usr/local/bin/python3
 
 # Imports
+from sys import argv, exit # CLI arguments
+import argparse # CLI argument parsing
+from os.path import isfile # Basic bounds checks
+from datetime import datetime # Runtime
 import nltk # Text processing
+
+# Use the argparse library to specific input and ouput files via the CLI.
+parser = argparse.ArgumentParser(description='Identify elements of weak writing.')
+parser.add_argument('input_file', metavar='-i', type=str, nargs='?' ,help='Input file.')
+parser.add_argument('output_file', metavar='-o', type=str, nargs='?' ,help='Input file.')
+
+# Class: c(olors)
+# Purpose: provide access to ANSI escape codes for styling output
+class c():
+    HEADER = '\033[95m' # Pink
+    OKBLUE = '\033[94m' # Purple
+    OKGREEN = '\033[92m' # Green
+    WARNING = '\033[93m' # Yellow
+    FAIL = '\033[91m' # Red
+    ENDC = '\033[0m' # None
+    BOLD = '\033[1m' # Blue
+    UNDERLINE = '\033[4m' # Underline
 
 # Store the Plain English Campaign's list of alternative words to common complex
 # ones (http://www.plainenglish.co.uk/the-a-z-of-alternative-words.html).
@@ -17,5 +38,65 @@ be_verbs = ["am", "is", "are", "was", "were", "be", "being", "been", "you're", "
 # Store a list of words to exclude from repetition highlighting.
 exclude = be_verbs+["the", "a", "or", "my", "and", "to", "we", "I", "for", "i", "what", "of", "that", "he", "she", "it", "you", "your", "have", "which", "in", "on", "with", "would", "as", "had"]
 
+# If run, not imported:
 if (__name__ == "__main__"):
-    print("Running")
+    # Parse CLI arguments.
+    args = parser.parse_args(argv[1:])
+    
+    # Error if user does not specify an input file
+    if (args.input_file == None):
+        parser.print_help()
+        exit(1)
+
+    # Make sure file exists
+    if (not isfile(args.input_file)):
+        print(f"{c.FAIL}Error:{c.ENDC} File does not exist.")
+        exit(1)
+
+    # Record start time
+    t1 = datetime.now()
+
+    # Otherwise, process the input file
+    print(f"Processing {c.UNDERLINE}{args.input_file}{c.ENDC} ... ")
+
+    # Read the template
+    fd = open("./assets/template.html", "r")
+    template = fd.read().split("<!--Divider-->")
+    fd.close()
+
+    # Open the output file
+    if (not args.output_file):
+        args.output_file = "index.html"
+    open(args.output_file, "w").close()
+    outfile = open(args.output_file, "a")
+
+    # Process file
+    infile = open(args.input_file, "r")
+    
+    for i,line in enumerate(infile):
+        line = line.strip()
+
+        # Extract title
+        if (i == 0):
+            # Handle files that already have a metadata header
+            if (line[:5] == "Type:"):
+                # Extract the title from the next line
+                title = next(infile)[7:]
+                # Skip three metadata lines and the blank line separator
+                next(infile); next(infile); next(infile); next(infile)
+            # Handle linkposts
+            elif (line[0] == "#"):
+                title = line.split("](")[0][2:]
+            # Handle original articles
+            else:
+                title = line
+
+            outfile.write(f"{template[1]}\n{title}")
+            continue
+        
+        outfile.write(f"{line}\n")
+
+    # Close file, record end time, and report execution time
+    infile.close()
+    t2 = datetime.now()
+    print(f"Execution time: {c.BOLD}{(t2-t1).total_seconds()}s{c.ENDC}")
