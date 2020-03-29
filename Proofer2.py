@@ -1,7 +1,5 @@
 #!/usr/local/bin/python3
 
-# Code cleanup
-# Documenation
 # Document statistic verification
 # Tune readability statistics
 
@@ -15,6 +13,7 @@ from html import unescape
 sys.path.insert(0, '/Users/zjszewczyk/Dropbox/Code/Standalone')
 from Markdown import Markdown
 from re import findall
+from re import split as regex_split
 
 # Use the argparse library to specific input and ouput files via the CLI.
 parser = argparse.ArgumentParser(description='Identify elements of weak writing.')
@@ -173,7 +172,7 @@ if (__name__ == "__main__"):
     # Otherwise, process the input file
     print(f"Processing {c.UNDERLINE}{args.input_file}{c.ENDC} ... ")
 
-    # Set document statistic variables
+    # Set document variables
     word_count, sentence_count, paragraph_count, overused_phrase_count, repeated_word_count, avoid_word_count, complex_words, syllable_count, fog_index, reading_ease, grade_level = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
     # Instantiate Markdown parser
@@ -186,7 +185,7 @@ if (__name__ == "__main__"):
 
     # Open the output file
     if (args.output_file == None):
-        args.output_file = "index.html"
+        args.output_file = "./index.html"
     open(args.output_file, "w").close()
     outfile = open(args.output_file, "a")
 
@@ -196,19 +195,15 @@ if (__name__ == "__main__"):
     for i,line in enumerate(infile):
         line = line.strip()
 
-        # Extract title
-        if (i == 0):
-            # Handle files that already have a metadata header
-            if (line[:5] == "Type:"):
+        if (i == 0): # Extract title
+            if (line[:5] == "Type:"): # Handle files with a metadata header
                 # Extract the title from the next line
                 title = next(infile)[7:]
                 # Skip three metadata lines and the blank line separator
                 next(infile); next(infile); next(infile); next(infile)
-            # Handle linkposts
-            elif (line[0] == "#"):
+            elif (line[0] == "#"): # Handle linkposts
                 title = line.split("](")[0][2:]
-            # Handle original articles
-            else:
+            else: # Handle original articles
                 title = line
                 next(infile)
 
@@ -216,33 +211,43 @@ if (__name__ == "__main__"):
             outfile.write(f"{template[0]}\n<article>\n<h2>{title}</h2>\n")
             continue
         
+        # Parse Markdown line into HTML
         html_line = md.html(line)
+
+        # Strip out all HTML tags from line, to leave only content.
         text_line = sub(r"(\<[^\>]+\>)", "", unescape(html_line))
         
-        # Process lines
+        # Increase the paragraph count
         if (len(line) != 0): paragraph_count += 1
 
-        tokens = (text_line).split(" ")
+        # Tokenize paragraph by splitting into individual words.
+        tokens = text_line.split(" ")
+
+        # Extract unique words in sentence.
         tokens_set = frozenset(tokens)
 
+        # Calculate total syllables present in document, and number of complex
+        # words (words with >= 3 syllables). Also count words.
         for word in tokens:
             if not (word.isalpha()): continue
             sylls = syllables(word)
             syllable_count += sylls
             if (sylls >= 3): complex_words += 1
+            word_count += 1
 
-        dups = []
+        # Find duplicate words, and highlight them.
         for word in (tokens_set - set(exclude+be_verbs)):
-            if (tokens.count(word) > 2):
-                dups.append(word)
+            if (len(word) != 0):
+                if (tokens.count(word) > 2):
+                    html_line = html_line.replace(word, f"<span class='dup'>{word}</span>")
 
-        for each in dups:
-            if (len(each) == 0): continue
-            print(each)
-            html_line = html_line.replace(each, f"<span class='dup'>{each}</span>")
-
+        # Count sentences in paragraph, as defined by the number of '.', ';', 
+        # '!', or '?' present.
         sentence_count += sum([text_line.count(x) for x in ['.',';','!','?']])
 
+        # Highlight be verbs, words the Plain English Campaign lists as complex,
+        # words Marked suggests avoiding, and words Marked suggests finding an
+        # alternative for.
         for each in tokens_set:
             # Ignore non-word tokens and tokens that are in the exclude list
             if not (each.isalpha()): continue
@@ -251,48 +256,43 @@ if (__name__ == "__main__"):
             if (each in be_verbs): # Handle be verbs
                 avoid_word_count += 1
                 html_line = sub(f"(\W){each}(\W)", "\1<span class='avoid'>"+each+"</span>\2", html_line)
-            elif (each in pec.keys()):
+            elif (each in pec.keys()): # Handle Plain English Campaign's list
                 overused_phrase_count += 1
                 html_line = html_line.replace(each, f"<span class='trite tooltip'>{each}<span class='tooltiptext'>Consider replacing with: {pec[each]}</span></span>")
             elif (each in marked_avoid): # Handle Marked's Avoid word list
                 avoid_word_count += 1
                 html_line = html_line.replace(each, f"<span class='avoid'>{each}</span>")
-            elif (each in marked_alternate): # Handle Marked's Alternate word list
+            elif (each in marked_alternate): # Handle Marked's Alternate list
                 overused_phrase_count += 1
                 html_line = html_line.replace(each, f"<span class='alternate'>{each}</span>")
 
-        word_count += len([x for x in tokens if x.isalpha()])
-
+        # Write the processed line to the HTML file.
         outfile.write(f"{html_line}\n")
-
-    else: # Write closing HTML tags and close files
-        # Calculate Gunning Fog Index
-        # estimates the years of formal education needed to understand the text on a first reading.
+    # At the end of the input file, write closing HTML tags and close all files.
+    else:
+        # Calculate Gunning Fog Index, which estimates the years of formal
+        # education needed to understand the text on a first reading.
         fog_index = 0.4*(float(word_count)/float(sentence_count) + 100.0*float(complex_words)/float(word_count))
 
-        # Calculate Flesch-Kincaid Readability Test
-        # higher scores indicate material that is easier to read; lower numbers indicate difficulty.
+        # Calculate Flesch-Kincaid Readability Test. Higher scores indicate
+        # material that is easier to read; lower numbers indicate difficulty.
         reading_ease = 206.835 - 1.015*(float(word_count)/float(sentence_count)) - 84.6*(float(syllable_count)/float(word_count))
+        if (reading_ease <= 30.0): reading_ease = "<span class='extreme'>%3.2f</span>" % (reading_ease)
+        elif (reading_ease <= 50.0): reading_ease = "<span class='hard'>%3.2f</span>" % (reading_ease)
+        elif (reading_ease <= 60.0): reading_ease = "<span class='tough'>%3.2f</span>" % (reading_ease)
+        elif (reading_ease <= 70.0): reading_ease = "<span class='plain'>%3.2f</span>" % (reading_ease)
+        elif (reading_ease <= 80.0): reading_ease = "<span class='fair'>%3.2f</span>" % (reading_ease)
+        elif (reading_ease <= 90.0): reading_ease = "<span class='easy'>%3.2f</span>" % (reading_ease)
+        elif (reading_ease <= 100.00): reading_ease = "<span class='simple'>%3.2f</span>" % (reading_ease)
 
-        if (reading_ease <= 30.0):
-            reading_ease = "<span class='extreme'>%3.2f</span>" % (reading_ease)
-        elif (reading_ease <= 50.0):
-            reading_ease = "<span class='hard'>%3.2f</span>" % (reading_ease)
-        elif (reading_ease <= 60.0):
-            reading_ease = "<span class='tough'>%3.2f</span>" % (reading_ease)
-        elif (reading_ease <= 70.0):
-            reading_ease = "<span class='plain'>%3.2f</span>" % (reading_ease)
-        elif (reading_ease <= 80.0):
-            reading_ease = "<span class='fair'>%3.2f</span>" % (reading_ease)
-        elif (reading_ease <= 90.0):
-            reading_ease = "<span class='easy'>%3.2f</span>" % (reading_ease)
-        elif (reading_ease <= 100.00):
-            reading_ease = "<span class='simple'>%3.2f</span>" % (reading_ease)
-
-        # Calculate the Flesch-Kincaid Grade level:
-        # the number of years of education generally required to understand this text.
+        # Calculate the Flesch-Kincaid Grade level, which estimates the number
+        # of years of education generally required to understand this text.
         grade_level = 0.39 * float(word_count)/float(sentence_count) + 11.8 * float(syllable_count)/float(word_count) - 15.59
+        
+        # Write the closing HTML tags, and fill in document statistics
         outfile.write(f"</article>\n{template[1].format(DTG=t1, WORDS=word_count, READING_TIME=(word_count/200), SENTENCES=sentence_count, PARAGRAPHS=paragraph_count, AVG=(word_count/paragraph_count), OVERUSED_PHRASES=overused_phrase_count, REPEATED_WORDS=repeated_word_count, WORDS_TO_AVOID=avoid_word_count, FOG_INDEX=fog_index, READING_EASE=reading_ease, GRADE_LEVEL=grade_level)}\n")
+        
+        # Close files.
         infile.close()
         outfile.close()
 
