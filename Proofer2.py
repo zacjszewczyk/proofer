@@ -13,7 +13,6 @@ from html import unescape
 sys.path.insert(0, '/Users/zjszewczyk/Dropbox/Code/Standalone')
 from Markdown import Markdown
 from re import findall
-from re import split as regex_split
 
 # Use the argparse library to specific input and ouput files via the CLI.
 parser = argparse.ArgumentParser(description='Identify elements of weak writing.')
