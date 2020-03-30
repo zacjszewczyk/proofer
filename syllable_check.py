@@ -122,6 +122,8 @@ def test_method(wordlist, method):
             calced_sylls = str(syllables(word))
         elif (method == "new"):
             calced_sylls = str(new_syllables(word))
+        elif (method == "other"):
+            calced_sylls = str(nsyl(word))
 
         if (calced_sylls != sylls):
             disagree += 1
@@ -156,11 +158,22 @@ def new_syllables(word):
 
     return add-sub
 
+from nltk.corpus import cmudict
+d = cmudict.dict()
+
+def nsyl(word):
+    try:
+        return [len(list(y for y in x if y[-1].isdigit())) for x in d[word.lower()]][0]
+    except KeyError:
+        #if word not found in cmudict
+        return -1
+
 if (__name__ == "__main__"):
     wordlist = "a"
     results = [f"Old: {test_method(wordlist,'old')}"]
     results.append(f"New: {test_method(wordlist,'new')}")
+    results.append(f"Other: {test_method(wordlist,'other')}")
 
     print(results[0])
     print(results[1])
-    
+    print(results[2])
