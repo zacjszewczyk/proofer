@@ -1,8 +1,5 @@
 #!/usr/local/bin/python3
 
-# Document statistic verification
-# Tune readability statistics
-
 # Imports
 import sys # CLI arguments
 import argparse # CLI argument parsing
