@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 
 # Imports
 import sys # CLI arguments
@@ -7,7 +7,7 @@ from os.path import isfile # Basic bounds checks
 from datetime import datetime # Runtime
 from re import sub # Text processing
 from html import unescape
-sys.path.insert(0, '/Users/zjszewczyk/Dropbox/Code/Standalone')
+sys.path.insert(0, '/Users/zjszewczyk/Dropbox/Code/firstcrack-private')
 from Markdown import Markdown
 from re import findall
 from re import split as resplit
