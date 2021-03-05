@@ -90,9 +90,12 @@ nav a {
 main {
 	overflow: hidden;
 }
+#document_stats .tooltip {
+	display: inline-block;
+}
 .tooltip { /* Tooltip container */
   position: relative;
-  display: inline-block;
+  /*display: inline-block;*/
 }
 .tooltip .tooltiptext { /* Tooltip text */
   visibility: hidden;
@@ -195,7 +198,7 @@ article {
 h1,h2,h3,h4,h5,h6 {
 	margin: 1em 0;
 }
-h1 span,h2 span,h3 span,h4 span,h5 span,h6 span {
+h1 span:last-of-type,h2 span:last-of-type,h3 span:last-of-type,h4 span:last-of-type,h5 span:last-of-type,h6 span:last-of-type {
     visibility: hidden;
 }
 h1:hover span,h2:hover span,h3:hover span,h4:hover span,h5:hover span,h6:hover span {
@@ -233,7 +236,7 @@ ul li, ol li {
 	border-top: 1pt dashed;
 	padding-top: 2em;
 }
-.avoid, .alternate, .trite, .extreme, .hard, .tough, .plain, .fair, .easy, .simple, .dup {
+.avoid, .alternate, .trite, .extreme, .hard, .tough, .plain, .fair, .easy, .simple, .dup, .long {
 	padding: 1pt .25em 1pt .25em;
 	border-radius: 0.25em;
 }
@@ -266,6 +269,9 @@ ul li, ol li {
 }
 .dup {
 	background-color: #91910f99;
+}
+.long {
+	background-color: #a8c5d899;
 }
 
 /** Footer **/

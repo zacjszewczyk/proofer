@@ -15,7 +15,7 @@ from re import split as resplit
 # Use the argparse library to specific input and ouput files via the CLI.
 parser = argparse.ArgumentParser(description='Identify elements of weak writing.')
 parser.add_argument('input_file', metavar='-i', type=str, nargs='?' ,help='Input file.')
-parser.add_argument('output_file', metavar='-o', type=str, nargs='?' ,help='Input file.')
+parser.add_argument('output_file', metavar='-o', type=str, nargs='?' ,help='Output file.')
 
 # Class: c(olors)
 # Purpose: provide access to ANSI escape codes for styling output
@@ -228,11 +228,16 @@ if (__name__ == "__main__"):
 
         # Calculate total syllables present in document, and number of complex
         # words (words with >= 3 syllables). Also count words.
+        long_words = []
         for word in tokens:
             if not (word.isalpha()): continue
             sylls = syllables(word)
             syllable_count += sylls
-            if (sylls >= 3): complex_words += 1
+            if (sylls >= 3): 
+                complex_words += 1
+                if (word not in long_words):
+                    html_line = html_line.replace(word, f"<span class='long'>{word}</span>")
+                    long_words.append(word)
             word_count += 1
 
         # Find duplicate words, and highlight them.
