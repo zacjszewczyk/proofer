@@ -126,6 +126,9 @@ main {
 	position: fixed;
 	top: 40%;
 	right: 3em;
+	background-color: white;
+	padding: 1em;
+	border-radius: 0.25em;
 }
 #document_stats h4 {
     font-size: 14pt;
