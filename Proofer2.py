@@ -147,7 +147,7 @@ marked_alternate = ['a large number of','a number of','accompany','accorded','ac
 be_verbs = ["am", "is", "are", "was", "were", "be", "being", "been", "you're", "they're"]
 
 # Store a list of words to exclude from repetition highlighting.
-exclude = ["the", "a", "or", "my", "and", "to", "we", "I", "for", "i", "what", "of", "that", "he", "she", "it", "you", "your", "have", "which", "in", "on", "with", "would", "as", "had", "s"]
+exclude = ["the", "a", "or", "my", "and", "to", "we", "an", "at", "I", "for", "i", "what", "of", "that", "he", "she", "it", "you", "your", "have", "which", "in", "on", "with", "would", "as", "had", "s"]
 
 # If run, not imported:
 if (__name__ == "__main__"):
