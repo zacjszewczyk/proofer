@@ -74,6 +74,12 @@
             text-size-adjust: none;
         }
 
+        /* Ensure the main wrappers take up the entire display area */
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
         /* Remove default margin in favour of better control in authored CSS */
         body, h1, h2, h3, h4, p, figure, blockquote, dl, dd {
             margin-block-end: 0;
@@ -135,6 +141,23 @@
         div {
             border: 1px solid black;
         }
+        #display_area {
+            height: 90%;
+            display: flex;
+        }
+        #source_pane, #preview_pane {
+            height: 100%;
+            width: 50%;
+            flex: 1 1 auto;
+        }
+        #info_area {
+            height: 10%;
+            display: flex;
+            flex-direction: column;
+        }
+        #stats_bar, #status_bar {
+            flex: 1 1 auto;
+        }
     </style>
 </head>
 
@@ -142,14 +165,19 @@
 <body>
     <div id="display_area">
         <div id="source_pane" contenteditable="true">
-
+            <p>Source</p>
         </div>
         <div id="preview_pane">
-
+            <p>Preview</p>
         </div>
     </div>
-    <div id="status_bar">
-
+    <div id="info_area">
+        <div id="stats_bar">
+            <p>Stats bar</p>
+        </div>
+        <div id="status_bar">
+            <p>Status bar</p>
+        </div>
     </div>
 </body>
 
