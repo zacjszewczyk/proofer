@@ -175,6 +175,9 @@
         }
 		#stats_bar div, #status_bar div {
 			flex: 1 1 auto;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
     </style>
 </head>
@@ -196,11 +199,11 @@
 			<div></div>
         </div>
         <div id="status_bar">
-            <div></div>
+            <div>Status: Ready</div>
 			<div></div>
 			<div></div>
 			<div></div>
-			<div><input type="button" value="Clear" id="clear_button" /></div>
+			<div><input type="button" value="Clear Source" id="clear_button" /></div>
         </div>
     </div>
 </body>
