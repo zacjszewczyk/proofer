@@ -212,8 +212,16 @@
 	
 	source_pane.addEventListener("input", saveSourcePane, false);
 	
+	if (localStorage.getItem("source") != null) {
+		source_pane.innerText = localStorage.getItem("source");
+	}
+	
 	function saveSourcePane() {
-		alert("Hi");
+		localStorage.setItem("source", this.innerText);
+	}
+	
+	function getSourcePan() {
+		var source_pane_content = localStorage.getItem("source");
 	}
 </script>
 
