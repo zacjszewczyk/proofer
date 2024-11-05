@@ -138,22 +138,23 @@
         }
     </style>
     <style type="text/css">
+        div {
+            border: 1px solid black;
+        }
+
 		body {
 			font-family: "Verdana";
 			font-size: 11pt;
 			display: flex;
 			flex-direction: column;
 		}
-        div {
-            border: 1px solid black;
-        }
         #display_area {
 			flex: 1 1 auto;
             display: flex;
 			min-width: 110em;
         }
         #source_pane, #preview_pane {
-            width: 50%;
+			width: 50%;
             flex: 1 1 auto;
 			padding: 0.5em;
         }
@@ -162,8 +163,8 @@
             flex-direction: column;
         }
         #stats_bar, #status_bar {
-            flex: 1 1 auto;
 			height: 1rem;
+			flex: 1 1 auto;
 			display: flex;
 			flex-direction: row;
         }
