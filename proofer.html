@@ -208,9 +208,9 @@
 <!-- Linked or inline JavaScript -->
 <!-- <script src="/scripts.js"></script> -->
 <script type="text/javascript">
-	var source_pane = document.getElementById("source_pane");
+	const source_pane = document.getElementById("source_pane");
 	
-	source_pane.addEventListener("change", saveSourcePane);
+	source_pane.addEventListener("input", saveSourcePane, false);
 	
 	function saveSourcePane() {
 		alert("Hi");
