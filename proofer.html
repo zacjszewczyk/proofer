@@ -148,6 +148,18 @@
 			display: flex;
 			flex-direction: column;
 		}
+		#labels {
+		    display: flex;
+		}
+		#labels div {
+			flex: 1 1 auto;
+			width: 50%;
+			display: flex;
+			justify-content: center;
+			font-family: "Arial";
+			font-weight: bold;
+			padding: 1pt 0;
+		}
         #display_area {
 			display: flex;
 			flex: 1 1 auto;
@@ -168,13 +180,13 @@
 			flex-shrink: 0;
         }
         #stats_bar, #status_bar {
-			height: 2rem;
+			height: 1.5rem;
 			flex: 1 1 auto;
 			display: flex;
 			flex-direction: row;
         }
 		#stats_bar div, #status_bar div {
-			flex: 1 1 auto;
+			flex: 1 1 50%;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -184,6 +196,10 @@
 
 <!-- Page body -->
 <body>
+	<div id="labels">
+		<div>Source Pane</div>
+		<div>Preview Pane</div>
+	</div>
     <div id="display_area">
         <div id="source_pane" contenteditable="true">
             <p>Source</p>
@@ -197,12 +213,12 @@
             <div></div>
 			<div></div>
 			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
         </div>
         <div id="status_bar">
             <div>Status: Ready</div>
-			<div></div>
-			<div></div>
-			<div></div>
 			<div><input type="button" value="Clear Source" id="clear_button" /></div>
         </div>
     </div>
