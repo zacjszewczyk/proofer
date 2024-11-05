@@ -168,7 +168,7 @@
 			flex-shrink: 0;
         }
         #stats_bar, #status_bar {
-			height: 1rem;
+			height: 2rem;
 			flex: 1 1 auto;
 			display: flex;
 			flex-direction: row;
@@ -200,7 +200,7 @@
 			<div></div>
 			<div></div>
 			<div></div>
-			<div></div>
+			<div><input type="button" value="Clear" id="clear_button" /></div>
         </div>
     </div>
 </body>
@@ -209,8 +209,10 @@
 <!-- <script src="/scripts.js"></script> -->
 <script type="text/javascript">
 	const source_pane = document.getElementById("source_pane");
+	const clear_button = document.getElementById("clear_button");
 	
 	source_pane.addEventListener("input", saveSourcePane, false);
+	clear_button.addEventListener("click", clear, false);
 	
 	if (localStorage.getItem("source") != null) {
 		source_pane.innerText = localStorage.getItem("source");
@@ -222,6 +224,11 @@
 	
 	function getSourcePan() {
 		var source_pane_content = localStorage.getItem("source");
+	}
+	
+	function clear() {
+		source_pane.innerText = "";
+		localStorage.clear();
 	}
 </script>
 
