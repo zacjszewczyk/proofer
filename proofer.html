@@ -96,7 +96,7 @@
         /* Set core body defaults */
         body {
             min-height: 100vh;
-            line-height: 1.5;
+            line-height: 1;
         }
 
         /* Set shorter line heights on headings and interactive elements */
@@ -138,26 +138,38 @@
         }
     </style>
     <style type="text/css">
+		body {
+			font-family: "Verdana";
+			font-size: 11pt;
+			display: flex;
+			flex-direction: column;
+		}
         div {
             border: 1px solid black;
         }
         #display_area {
-            height: 90%;
+			flex: 1 1 auto;
             display: flex;
+			min-width: 110em;
         }
         #source_pane, #preview_pane {
-            height: 100%;
             width: 50%;
             flex: 1 1 auto;
+			padding: 0.5em;
         }
         #info_area {
-            height: 10%;
             display: flex;
             flex-direction: column;
         }
         #stats_bar, #status_bar {
             flex: 1 1 auto;
+			height: 1rem;
+			display: flex;
+			flex-direction: row;
         }
+		#stats_bar div, #status_bar div {
+			flex: 1 1 auto;
+		}
     </style>
 </head>
 
@@ -173,10 +185,16 @@
     </div>
     <div id="info_area">
         <div id="stats_bar">
-            <p>Stats bar</p>
+            <div></div>
+			<div></div>
+			<div></div>
         </div>
         <div id="status_bar">
-            <p>Status bar</p>
+            <div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
         </div>
     </div>
 </body>
