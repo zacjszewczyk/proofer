@@ -43,6 +43,7 @@
         .alternate, .trite { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #A72BDD99; }
         .dup { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #91910f59; }
         .long { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #a8c5d899; }
+        .adverb { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #E8960099; }
 
         /* Readability score colors */
         .extreme { background-color: #FF6666; padding: 2px 6px; border-radius: 3px; }
@@ -121,6 +122,26 @@
         <span class="stat"><span class="stat-label">Words to Avoid:</span> <span class="stat-value" id="stat-avoid">0</span></span>
         <span class="separator"></span>
         <span class="stat"><span class="stat-label">Repeated Words:</span> <span class="stat-value" id="stat-repeated">0</span></span>
+        <span class="separator"></span>
+        <span class="stat"><span class="stat-label">Reading Time:</span> <span class="stat-value" id="stat-reading-time">0s</span></span>
+        <span class="separator"></span>
+        <span class="stat"><span class="stat-label">Characters:</span> <span class="stat-value" id="stat-chars">0</span></span>
+        <span class="separator"></span>
+        <span class="stat"><span class="stat-label">Avg Words/Para:</span> <span class="stat-value" id="stat-avg-wpp">0</span></span>
+        <span class="separator"></span>
+        <span class="stat"><span class="stat-label">Passive Voice:</span> <span class="stat-value" id="stat-passive">0</span></span>
+        <span class="separator"></span>
+        <span class="stat"><span class="stat-label">Adverbs:</span> <span class="stat-value" id="stat-adverbs">0</span></span>
+        <span class="separator"></span>
+        <span class="stat"><span class="stat-label">Long Sentences:</span> <span class="stat-value" id="stat-long-sentences">0</span></span>
+        <span class="separator"></span>
+        <span class="stat"><span class="stat-label">Repeated Starts:</span> <span class="stat-value" id="stat-repeated-starts">0</span></span>
+        <span class="separator"></span>
+        <span class="stat"><span class="stat-label">Vocab Diversity:</span> <span class="stat-value" id="stat-vocab-diversity">0%</span></span>
+        <span class="separator"></span>
+        <span class="stat"><span class="stat-label">Transitions:</span> <span class="stat-value" id="stat-transitions">0</span></span>
+        <span class="separator"></span>
+        <span class="stat"><span class="stat-label">Sentence Variation:</span> <span class="stat-value" id="stat-sentence-var">0</span></span>
     </div>
 
     <div class="legend">
@@ -129,6 +150,7 @@
         <div class="legend-item"><span class="legend-swatch" style="background:#ED9C9D99"></span> Words to avoid</div>
         <div class="legend-item"><span class="legend-swatch" style="background:#A72BDD99"></span> Overused / trite phrases</div>
         <div class="legend-item"><span class="legend-swatch" style="background:#A72BDD99"></span> Alternatives suggested</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#E8960099"></span> Adverbs (-ly words)</div>
     </div>
 
     <script src="lib/mammoth.browser.min.js"></script>
@@ -175,16 +197,28 @@
             document.getElementById('stat-overused').textContent = s.overused_phrase_count;
             document.getElementById('stat-avoid').textContent = s.avoid_word_count;
             document.getElementById('stat-repeated').textContent = s.repeated_word_count;
+            document.getElementById('stat-reading-time').textContent = s.reading_time_display;
+            document.getElementById('stat-chars').textContent = s.char_count;
+            document.getElementById('stat-avg-wpp').textContent = s.avg_words_per_paragraph.toFixed(1);
+            document.getElementById('stat-passive').textContent = s.passive_voice_count;
+            document.getElementById('stat-adverbs').textContent = s.adverb_count;
+            document.getElementById('stat-long-sentences').textContent = s.long_sentence_count;
+            document.getElementById('stat-repeated-starts').textContent = s.repeated_starts;
+            document.getElementById('stat-vocab-diversity').textContent = s.vocabulary_diversity.toFixed(1) + '%';
+            document.getElementById('stat-transitions').textContent = s.transition_word_count;
+            document.getElementById('stat-sentence-var').textContent = s.sentence_std_dev.toFixed(1);
         }
 
         function resetStats() {
-            var ids = ['stat-words','stat-sentences','stat-paragraphs','stat-avg-wps','stat-complex','stat-avg-syl','stat-fog','stat-grade','stat-overused','stat-avoid','stat-repeated'];
+            var ids = ['stat-words','stat-sentences','stat-paragraphs','stat-avg-wps','stat-complex','stat-avg-syl','stat-fog','stat-grade','stat-overused','stat-avoid','stat-repeated','stat-chars','stat-avg-wpp','stat-passive','stat-adverbs','stat-long-sentences','stat-repeated-starts','stat-transitions','stat-sentence-var'];
             for (var i = 0; i < ids.length; i++) {
                 document.getElementById(ids[i]).textContent = '0';
             }
             var reEl = document.getElementById('stat-reading-ease');
             reEl.textContent = '0';
             reEl.className = 'stat-value';
+            document.getElementById('stat-reading-time').textContent = '0s';
+            document.getElementById('stat-vocab-diversity').textContent = '0%';
         }
 
         // Import DOCX
