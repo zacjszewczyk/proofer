@@ -201,6 +201,11 @@
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
+  function replaceWholeWord(str, word, replacement) {
+    var re = new RegExp('\\b' + escapeRegExp(word) + '\\b', 'g');
+    return str.replace(re, replacement);
+  }
+
   // Main analyze function
   function analyze(text) {
     var word_count = 0;
@@ -250,7 +255,7 @@
         if (sylls >= 3) {
           complex_words += 1;
           if (long_words.indexOf(w) === -1) {
-            html_line = html_line.split(w).join("<span class='long'>" + w + "</span>");
+            html_line = replaceWholeWord(html_line, w, "<span class='long'>" + w + "</span>");
             long_words.push(w);
           }
         }
@@ -267,7 +272,7 @@
           if (tokens[ci] === uw) count++;
         }
         if (count > 2) {
-          html_line = html_line.split(uw).join("<span class='dup'>" + uw + "</span>");
+          html_line = replaceWholeWord(html_line, uw, "<span class='dup'>" + uw + "</span>");
           repeated_word_count += 1;
         }
       }
@@ -292,13 +297,13 @@
           html_line = html_line.replace(beRe, "$1<span class='avoid'>" + each + "</span>$2");
         } else if (pec.hasOwnProperty(each)) {
           overused_phrase_count += 1;
-          html_line = html_line.split(each).join("<span class='trite tooltip'>" + each + "<span class='tooltiptext'>Consider replacing with: " + pec[each] + "</span></span>");
+          html_line = replaceWholeWord(html_line, each, "<span class='trite tooltip'>" + each + "<span class='tooltiptext'>Consider replacing with: " + pec[each] + "</span></span>");
         } else if (marked_avoid.indexOf(each) !== -1) {
           avoid_word_count += 1;
-          html_line = html_line.split(each).join("<span class='avoid'>" + each + "</span>");
+          html_line = replaceWholeWord(html_line, each, "<span class='avoid'>" + each + "</span>");
         } else if (marked_alternate.indexOf(each) !== -1) {
           overused_phrase_count += 1;
-          html_line = html_line.split(each).join("<span class='alternate'>" + each + "</span>");
+          html_line = replaceWholeWord(html_line, each, "<span class='alternate'>" + each + "</span>");
         }
       }
 

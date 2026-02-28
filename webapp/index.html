@@ -78,7 +78,7 @@
         <div class="actions">
             <button id="btn-import">Import DOCX</button>
             <button id="btn-export-md">Export Markdown</button>
-            <button id="btn-export-docx">Export DOCX</button>
+            <button id="btn-export-docx">Export DOC</button>
             <button id="btn-clear">Clear</button>
             <input type="file" id="file-input" accept=".docx" hidden>
         </div>
@@ -212,17 +212,17 @@
 
         // Export Markdown
         document.getElementById('btn-export-md').addEventListener('click', function() {
-            var text = preview.innerText || source.value;
+            var text = source.value;
             if (!text.trim()) return;
             download('document.md', text, 'text/plain');
         });
 
-        // Export DOCX
+        // Export DOCX (HTML-as-DOC format, widely supported by Word)
         document.getElementById('btn-export-docx').addEventListener('click', function() {
             var content = preview.innerHTML || '';
             if (!content.trim()) return;
             var docHtml = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Export</title><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;}</style></head><body>' + content + '</body></html>';
-            download('document.docx', docHtml, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+            download('document.doc', docHtml, 'application/msword');
         });
 
         // Clear
