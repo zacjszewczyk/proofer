@@ -679,8 +679,12 @@
     var preposition_density = word_count > 0 ? (preposition_count / word_count * 100) : 0;
 
     // Writing strength score (0-100, higher is better)
-    // Scale factor 500: at ~20% issue density the score reaches 0; tuned for typical prose
-    var total_issues = avoid_word_count + overused_phrase_count + adverb_count + hedge_word_count + nominalization_count + passive_voice_count + weak_opening_count + cliche_count + long_sentence_count + repeated_starts + vague_word_count + redundant_phrase_count;
+    // Scale factor 500: at 20% issue density the score reaches 0
+    var total_issues = avoid_word_count + overused_phrase_count
+        + adverb_count + hedge_word_count + nominalization_count
+        + passive_voice_count + weak_opening_count + cliche_count
+        + long_sentence_count + repeated_starts
+        + vague_word_count + redundant_phrase_count;
     var writing_strength = word_count > 0 ? Math.max(0, Math.min(100, 100 - (total_issues / word_count * 500))) : 0;
 
     // Calculate readability stats (guard against division by zero)
