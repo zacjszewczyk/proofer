@@ -47,9 +47,32 @@
         .hedge { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #FFD70099; }
         .nominalization { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #20B2AA99; }
         .passive { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #FF69B499; }
+        .vague { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #8B451399; }
+        .redundant { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #DC143C99; }
 
         /* Multi-flag: words flagged by more than one category */
-        .multi-flag { border: 2px dashed #333; box-shadow: 0 0 3px rgba(0,0,0,0.4); font-weight: 600; }
+        .multi-flag {
+            border: 2px solid #222;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #222;
+            font-weight: 700;
+            background-image: repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 3px,
+                rgba(0,0,0,0.08) 3px,
+                rgba(0,0,0,0.08) 6px
+            );
+            position: relative;
+        }
+        .flag-count {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: #d32f2f; color: white; font-size: 0.65rem; font-weight: 700;
+            min-width: 15px; height: 15px; border-radius: 8px;
+            padding: 0 4px; margin-left: 2px;
+            position: relative; top: -0.6em;
+            line-height: 1; vertical-align: baseline;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
 
         /* Readability score colors */
         .extreme { background-color: #FF6666; padding: 2px 6px; border-radius: 3px; }
@@ -81,6 +104,21 @@
         .preview blockquote { margin: 0.5em 0 0.5em 1em; padding-left: 1em; border-left: 3px solid #ccc; }
         .preview pre, .preview code { background: #f1f1f1; font-family: "Courier New", monospace; border-radius: 4px; padding: 2px 4px; }
         .preview pre { padding: 1em; overflow-x: auto; }
+
+        /* Sentence rhythm chart */
+        .rhythm-container { padding: 0.5rem 1.5rem; background: #f8f8f8; border-top: 1px solid #ddd; }
+        .rhythm-label { font-size: 0.8rem; font-weight: 600; color: #555; margin-bottom: 0.3rem; }
+        .rhythm-chart { display: flex; align-items: flex-end; gap: 2px; height: 40px; }
+        .rhythm-bar { flex: 1; min-width: 3px; max-width: 12px; border-radius: 2px 2px 0 0; transition: height 0.3s; }
+        .rhythm-bar.short-sent { background: #73A41E; }
+        .rhythm-bar.normal-sent { background: #5FAD14; }
+        .rhythm-bar.long-sent { background: #D77751; }
+        .rhythm-bar.very-long-sent { background: #FF6666; }
+
+        /* Writing strength meter */
+        .strength-meter { display: flex; align-items: center; gap: 0.5rem; }
+        .strength-bar-bg { width: 80px; height: 10px; background: #444; border-radius: 5px; overflow: hidden; }
+        .strength-bar-fill { height: 100%; border-radius: 5px; transition: width 0.3s, background 0.3s; }
     </style>
 </head>
 <body>
@@ -170,6 +208,14 @@
         <span class="stat tooltip"><span class="stat-label">Sentence Variation:</span> <span class="stat-value" id="stat-sentence-var">0</span><span class="tooltiptext">Standard deviation of sentence lengths. Higher means more varied sentence rhythm. Aim for 5–15 for engaging prose.</span></span>
         <span class="separator"></span>
         <span class="stat tooltip"><span class="stat-label">Be-Verb %:</span> <span class="stat-value" id="stat-be-verb-pct">0%</span><span class="tooltiptext">Percentage of words that are be-verbs (is, was, were, etc.). Under 3% is strong writing. Replace with active verbs.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Vague Words:</span> <span class="stat-value" id="stat-vague">0</span><span class="tooltiptext">Imprecise words ("some", "things", "stuff", "nice"). Replace with specific, concrete language.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Redundancies:</span> <span class="stat-value" id="stat-redundant">0</span><span class="tooltiptext">Redundant phrases ("end result", "past history"). One word already implies the other — cut the extra.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Preposition %:</span> <span class="stat-value" id="stat-preposition">0%</span><span class="tooltiptext">Percentage of words that are prepositions. Over 12% may indicate wordy or indirect constructions. Aim for under 12%.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Strength:</span> <span class="stat-value strength-meter" id="stat-strength"><span class="strength-bar-bg"><span class="strength-bar-fill" id="strength-fill" style="width:0%;background:#999"></span></span> <span id="strength-num">0</span></span><span class="tooltiptext">Writing Strength Score (0–100). Combines all issue counts relative to word count. Higher is cleaner, stronger writing.</span></span>
     </div>
 
     <div class="legend">
@@ -181,7 +227,14 @@
         <div class="legend-item"><span class="legend-swatch" style="background:#FFD70099"></span> Hedge words</div>
         <div class="legend-item"><span class="legend-swatch" style="background:#20B2AA99"></span> Nominalizations</div>
         <div class="legend-item"><span class="legend-swatch" style="background:#FF69B499"></span> Passive voice</div>
-        <div class="legend-item"><span class="legend-swatch" style="border:2px dashed #333; background:linear-gradient(135deg, #a8c5d899 50%, #E8960099 50%);"></span> Multiple flags</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#8B451399"></span> Vague / imprecise</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#DC143C99"></span> Redundant phrases</div>
+        <div class="legend-item"><span class="legend-swatch" style="border:2px solid #222; box-shadow: 0 0 0 1px #fff, 0 0 0 2px #222; background:repeating-linear-gradient(-45deg,#a8c5d899,#a8c5d899 3px,rgba(0,0,0,0.08) 3px,rgba(0,0,0,0.08) 6px);"></span> Multiple flags <span style="display:inline-flex;align-items:center;justify-content:center;background:#d32f2f;color:white;font-size:0.6rem;font-weight:700;min-width:12px;height:12px;border-radius:6px;padding:0 3px;">2</span></div>
+    </div>
+
+    <div class="rhythm-container" id="rhythm-container" style="display:none">
+        <div class="rhythm-label">Sentence Rhythm <span style="font-weight:400;opacity:0.7">(bar height = sentence length)</span></div>
+        <div class="rhythm-chart" id="rhythm-chart"></div>
     </div>
 
     <script src="lib/mammoth.browser.min.js"></script>
@@ -247,10 +300,43 @@
             document.getElementById('stat-transitions').textContent = s.transition_word_count;
             document.getElementById('stat-sentence-var').textContent = s.sentence_std_dev.toFixed(1);
             document.getElementById('stat-be-verb-pct').textContent = s.be_verb_pct.toFixed(1) + '%';
+            document.getElementById('stat-vague').textContent = s.vague_word_count;
+            document.getElementById('stat-redundant').textContent = s.redundant_phrase_count;
+            document.getElementById('stat-preposition').textContent = s.preposition_density.toFixed(1) + '%';
+
+            // Writing strength meter
+            var strength = s.writing_strength.toFixed(0);
+            document.getElementById('strength-num').textContent = strength;
+            var fill = document.getElementById('strength-fill');
+            fill.style.width = strength + '%';
+            if (s.writing_strength >= 80) fill.style.background = '#37BF00';
+            else if (s.writing_strength >= 60) fill.style.background = '#73A41E';
+            else if (s.writing_strength >= 40) fill.style.background = '#C38047';
+            else if (s.writing_strength >= 20) fill.style.background = '#D77751';
+            else fill.style.background = '#FF6666';
+
+            // Sentence rhythm chart
+            var rhythmContainer = document.getElementById('rhythm-container');
+            var rhythmChart = document.getElementById('rhythm-chart');
+            if (s.sentence_lengths && s.sentence_lengths.length > 0) {
+                rhythmContainer.style.display = '';
+                var maxLen = Math.max.apply(null, s.sentence_lengths);
+                var bars = '';
+                for (var ri = 0; ri < s.sentence_lengths.length; ri++) {
+                    var sl = s.sentence_lengths[ri];
+                    var barH = maxLen > 0 ? Math.max(2, Math.round(sl / maxLen * 36)) : 2;
+                    var barClass = sl < 5 ? 'short-sent' : sl <= 25 ? 'normal-sent' : sl <= 40 ? 'long-sent' : 'very-long-sent';
+                    bars += '<div class="rhythm-bar ' + barClass + '" style="height:' + barH + 'px" title="Sentence ' + (ri+1) + ': ' + sl + ' words"></div>';
+                }
+                rhythmChart.innerHTML = bars;
+            } else {
+                rhythmContainer.style.display = 'none';
+                rhythmChart.innerHTML = '';
+            }
         }
 
         function resetStats() {
-            var ids = ['stat-words','stat-sentences','stat-paragraphs','stat-avg-wps','stat-complex','stat-avg-syl','stat-fog','stat-grade','stat-overused','stat-avoid','stat-repeated','stat-chars','stat-avg-wpp','stat-avg-spp','stat-passive','stat-adverbs','stat-hedge','stat-nominalizations','stat-weak-openings','stat-cliches','stat-long-sentences','stat-short-sentences','stat-longest-sentence','stat-repeated-starts','stat-transitions','stat-sentence-var'];
+            var ids = ['stat-words','stat-sentences','stat-paragraphs','stat-avg-wps','stat-complex','stat-avg-syl','stat-fog','stat-grade','stat-overused','stat-avoid','stat-repeated','stat-chars','stat-avg-wpp','stat-avg-spp','stat-passive','stat-adverbs','stat-hedge','stat-nominalizations','stat-weak-openings','stat-cliches','stat-long-sentences','stat-short-sentences','stat-longest-sentence','stat-repeated-starts','stat-transitions','stat-sentence-var','stat-vague','stat-redundant'];
             for (var i = 0; i < ids.length; i++) {
                 document.getElementById(ids[i]).textContent = '0';
             }
@@ -261,6 +347,11 @@
             document.getElementById('stat-speaking-time').textContent = '0s';
             document.getElementById('stat-vocab-diversity').textContent = '0%';
             document.getElementById('stat-be-verb-pct').textContent = '0%';
+            document.getElementById('stat-preposition').textContent = '0%';
+            document.getElementById('strength-num').textContent = '0';
+            document.getElementById('strength-fill').style.width = '0%';
+            document.getElementById('rhythm-container').style.display = 'none';
+            document.getElementById('rhythm-chart').innerHTML = '';
         }
 
         // Import DOCX
