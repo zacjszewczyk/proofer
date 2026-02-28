@@ -184,17 +184,22 @@
     return text;
   }
 
-  // Strip HTML tags and unescape entities
+  // Strip HTML tags and unescape entities for text analysis
   function stripHtml(html) {
-    var text = html.replace(/<[^>]+>/g, '');
-    // Unescape common HTML entities
-    var el = null;
     if (typeof document !== 'undefined') {
-      el = document.createElement('textarea');
-      el.innerHTML = text;
-      return el.value;
+      var el = document.createElement('div');
+      el.innerHTML = html;
+      return el.textContent || el.innerText || '';
     }
-    return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+    // Node.js fallback: iteratively strip tags then unescape entities
+    var text = html;
+    var prev;
+    do {
+      prev = text;
+      text = text.replace(/<[^>]*>/g, '');
+    } while (text !== prev);
+    var entityMap = {'&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'"};
+    return text.replace(/&amp;|&lt;|&gt;|&quot;|&#39;/g, function(match) { return entityMap[match]; });
   }
 
   function escapeRegExp(str) {
