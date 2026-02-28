@@ -232,6 +232,16 @@
     return str.replace(re, replacement);
   }
 
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // Build cliché regexps once
+  var cliche_regexps = [];
+  for (var cri = 0; cri < cliches.length; cri++) {
+    cliche_regexps.push(new RegExp(escapeRegExp(cliches[cri]), 'gi'));
+  }
+
   // Main analyze function
   function analyze(text) {
     var word_count = 0;
@@ -391,7 +401,7 @@
         var classes = f.classes.join(' ');
         if (f.classes.length > 1) classes += ' multi-flag';
         if (f.tooltip) {
-          html_line = replaceWholeWord(html_line, f.word, "<span class='" + classes + " tooltip'>" + f.word + "<span class='tooltiptext'>" + f.tooltip + "</span></span>");
+          html_line = replaceWholeWord(html_line, f.word, "<span class='" + classes + " tooltip'>" + f.word + "<span class='tooltiptext'>" + escapeHtml(f.tooltip) + "</span></span>");
         } else {
           html_line = replaceWholeWord(html_line, f.word, "<span class='" + classes + "'>" + f.word + "</span>");
         }
@@ -440,13 +450,11 @@
         if (twMatches) transition_word_count += twMatches.length;
       }
 
-      // Detect clichés in the line
-      for (var cli = 0; cli < cliches.length; cli++) {
-        var clicheLower = cliches[cli];
-        var clicheIdx = text_lower.indexOf(clicheLower);
-        if (clicheIdx !== -1) {
-          cliche_count++;
-        }
+      // Detect clichés in the line using prebuilt regexps
+      for (var cli = 0; cli < cliche_regexps.length; cli++) {
+        cliche_regexps[cli].lastIndex = 0;
+        var clicheMatches = text_lower.match(cliche_regexps[cli]);
+        if (clicheMatches) cliche_count += clicheMatches.length;
       }
 
       htmlLines.push(html_line);
@@ -501,8 +509,14 @@
     var speaking_time_display = speaking_time_min > 0 ? (speaking_time_min + 'm ' + speaking_time_sec + 's') : (speaking_time_sec + 's');
 
     // Sentences per paragraph
-    var avg_sentences_per_paragraph = paragraph_sentence_counts.length > 0 ?
-      (function() { var s = 0; for (var i = 0; i < paragraph_sentence_counts.length; i++) s += paragraph_sentence_counts[i]; return s / paragraph_sentence_counts.length; })() : 0;
+    var avg_sentences_per_paragraph = 0;
+    if (paragraph_sentence_counts.length > 0) {
+      var para_sent_sum = 0;
+      for (var psi = 0; psi < paragraph_sentence_counts.length; psi++) {
+        para_sent_sum += paragraph_sentence_counts[psi];
+      }
+      avg_sentences_per_paragraph = para_sent_sum / paragraph_sentence_counts.length;
+    }
 
     // Longest sentence
     var longest_sentence = 0;
