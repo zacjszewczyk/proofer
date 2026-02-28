@@ -44,6 +44,12 @@
         .dup { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #91910f59; }
         .long { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #a8c5d899; }
         .adverb { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #E8960099; }
+        .hedge { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #FFD70099; }
+        .nominalization { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #20B2AA99; }
+        .passive { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #FF69B499; }
+
+        /* Multi-flag: words flagged by more than one category */
+        .multi-flag { border: 2px dashed #333; box-shadow: 0 0 3px rgba(0,0,0,0.4); font-weight: 600; }
 
         /* Readability score colors */
         .extreme { background-color: #FF6666; padding: 2px 6px; border-radius: 3px; }
@@ -55,14 +61,18 @@
         .simple { background-color: #37BF00; padding: 2px 6px; border-radius: 3px; color: white; }
 
         /* Tooltip styling */
-        .tooltip { position: relative; display: inline; }
+        .tooltip { position: relative; display: inline; cursor: help; }
         .tooltip .tooltiptext {
             visibility: hidden; position: absolute; z-index: 10; bottom: 125%; left: 50%;
-            transform: translateX(-50%); background: #333; color: white; padding: 6px 10px;
-            border-radius: 4px; font-size: 0.8rem; white-space: nowrap;
+            transform: translateX(-50%); background: #333; color: white; padding: 8px 12px;
+            border-radius: 6px; font-size: 0.8rem; white-space: normal; width: max-content;
+            max-width: 300px; line-height: 1.4;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            pointer-events: none;
         }
         .tooltip:hover .tooltiptext { visibility: visible; }
+        /* Stats bar tooltip - appear above the bar */
+        .stats-bar .tooltip .tooltiptext { bottom: 150%; }
 
         /* Paragraphs in preview */
         .preview p { margin: 0.75em 0; }
@@ -99,49 +109,67 @@
     </div>
 
     <div class="stats-bar" id="stats-bar">
-        <span class="stat"><span class="stat-label">Words:</span> <span class="stat-value" id="stat-words">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Words:</span> <span class="stat-value" id="stat-words">0</span><span class="tooltiptext">Total word count. Useful for tracking length requirements.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Sentences:</span> <span class="stat-value" id="stat-sentences">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Sentences:</span> <span class="stat-value" id="stat-sentences">0</span><span class="tooltiptext">Total number of sentences. Vary sentence length for engaging prose.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Paragraphs:</span> <span class="stat-value" id="stat-paragraphs">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Paragraphs:</span> <span class="stat-value" id="stat-paragraphs">0</span><span class="tooltiptext">Total paragraphs. Keep paragraphs focused on one idea each.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Avg Words/Sentence:</span> <span class="stat-value" id="stat-avg-wps">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Avg Words/Sent:</span> <span class="stat-value" id="stat-avg-wps">0</span><span class="tooltiptext">Average words per sentence. Aim for 15–20 words. Over 25 may be hard to follow.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Complex Words:</span> <span class="stat-value" id="stat-complex">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Complex Words:</span> <span class="stat-value" id="stat-complex">0</span><span class="tooltiptext">Words with 3+ syllables. Minimize these to improve readability. Try simpler synonyms.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Syllables/Word:</span> <span class="stat-value" id="stat-avg-syl">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Syllables/Word:</span> <span class="stat-value" id="stat-avg-syl">0</span><span class="tooltiptext">Average syllables per word. Lower is easier to read. Aim for under 1.7.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Fog Index ↓:</span> <span class="stat-value" id="stat-fog">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Fog Index ↓:</span> <span class="stat-value" id="stat-fog">0</span><span class="tooltiptext">Gunning Fog Index estimates years of education needed. Aim for 8–12 for general audiences. Lower is clearer.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Reading Ease ↑:</span> <span class="stat-value" id="stat-reading-ease">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Reading Ease ↑:</span> <span class="stat-value" id="stat-reading-ease">0</span><span class="tooltiptext">Flesch Reading Ease (0–100). Higher is easier: 60–70 = standard, 70–80 = fairly easy, 80+ = easy. Shorten sentences and use simpler words to improve.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Grade Level ↓:</span> <span class="stat-value" id="stat-grade">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Grade Level ↓:</span> <span class="stat-value" id="stat-grade">0</span><span class="tooltiptext">Flesch-Kincaid Grade Level. The US school grade needed to understand the text. Aim for grade 8 or lower for broad audiences.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Overused Phrases:</span> <span class="stat-value" id="stat-overused">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Overused Phrases:</span> <span class="stat-value" id="stat-overused">0</span><span class="tooltiptext">Count of overused, trite, or cliché phrases. Replace with fresher, more direct language.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Words to Avoid:</span> <span class="stat-value" id="stat-avoid">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Words to Avoid:</span> <span class="stat-value" id="stat-avoid">0</span><span class="tooltiptext">Weak or filler words (including be-verbs like "is/was/were"). Use stronger, more specific verbs.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Repeated Words:</span> <span class="stat-value" id="stat-repeated">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Repeated Words:</span> <span class="stat-value" id="stat-repeated">0</span><span class="tooltiptext">Words appearing 3+ times in a paragraph. Use synonyms or restructure to reduce repetition.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Reading Time:</span> <span class="stat-value" id="stat-reading-time">0s</span></span>
+        <span class="stat tooltip"><span class="stat-label">Reading Time:</span> <span class="stat-value" id="stat-reading-time">0s</span><span class="tooltiptext">Estimated silent reading time at 238 words per minute (average adult speed).</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Characters:</span> <span class="stat-value" id="stat-chars">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Speaking Time:</span> <span class="stat-value" id="stat-speaking-time">0s</span><span class="tooltiptext">Estimated speaking time at 150 words per minute. Useful for presentations and speeches.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Avg Words/Para:</span> <span class="stat-value" id="stat-avg-wpp">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Characters:</span> <span class="stat-value" id="stat-chars">0</span><span class="tooltiptext">Total characters excluding spaces. Useful for character-limited formats.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Passive Voice:</span> <span class="stat-value" id="stat-passive">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Avg Words/Para:</span> <span class="stat-value" id="stat-avg-wpp">0</span><span class="tooltiptext">Average words per paragraph. Aim for 40–80 words. Very long paragraphs can overwhelm readers.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Adverbs:</span> <span class="stat-value" id="stat-adverbs">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Avg Sent/Para:</span> <span class="stat-value" id="stat-avg-spp">0</span><span class="tooltiptext">Average sentences per paragraph. Aim for 3–5 sentences per paragraph for readability.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Long Sentences:</span> <span class="stat-value" id="stat-long-sentences">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Passive Voice:</span> <span class="stat-value" id="stat-passive">0</span><span class="tooltiptext">Passive voice constructions (e.g., "was written"). Prefer active voice for stronger, clearer sentences.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Repeated Starts:</span> <span class="stat-value" id="stat-repeated-starts">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Adverbs:</span> <span class="stat-value" id="stat-adverbs">0</span><span class="tooltiptext">Adverbs (-ly words) can weaken writing. Use stronger verbs instead: "ran quickly" → "sprinted".</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Vocab Diversity:</span> <span class="stat-value" id="stat-vocab-diversity">0%</span></span>
+        <span class="stat tooltip"><span class="stat-label">Hedge Words:</span> <span class="stat-value" id="stat-hedge">0</span><span class="tooltiptext">Hedging language ("might", "perhaps", "seems"). These weaken your arguments. Be more direct and assertive.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Transitions:</span> <span class="stat-value" id="stat-transitions">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Nominalizations:</span> <span class="stat-value" id="stat-nominalizations">0</span><span class="tooltiptext">Nouns derived from verbs (e.g., "utilization"). Use the verb form ("use") for more vigorous writing.</span></span>
         <span class="separator"></span>
-        <span class="stat"><span class="stat-label">Sentence Variation:</span> <span class="stat-value" id="stat-sentence-var">0</span></span>
+        <span class="stat tooltip"><span class="stat-label">Weak Openings:</span> <span class="stat-value" id="stat-weak-openings">0</span><span class="tooltiptext">Sentences starting with "There is/are" or "It is/was". Restructure to lead with the real subject.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Clichés:</span> <span class="stat-value" id="stat-cliches">0</span><span class="tooltiptext">Overused expressions that have lost impact. Replace with original, specific language.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Long Sentences:</span> <span class="stat-value" id="stat-long-sentences">0</span><span class="tooltiptext">Sentences with more than 25 words. Split into shorter sentences for clarity.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Short Sentences:</span> <span class="stat-value" id="stat-short-sentences">0</span><span class="tooltiptext">Sentences with fewer than 5 words. A few add punch, but many in a row create choppy prose.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Longest Sentence:</span> <span class="stat-value" id="stat-longest-sentence">0</span><span class="tooltiptext">The word count of your longest sentence. If over 40, consider splitting it.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Repeated Starts:</span> <span class="stat-value" id="stat-repeated-starts">0</span><span class="tooltiptext">Consecutive sentences beginning with the same word. Vary your openings for better flow.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Vocab Diversity:</span> <span class="stat-value" id="stat-vocab-diversity">0%</span><span class="tooltiptext">Type-token ratio: unique words ÷ total words. Higher means more varied vocabulary. Aim for 60%+ in shorter texts.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Transitions:</span> <span class="stat-value" id="stat-transitions">0</span><span class="tooltiptext">Transition words ("however", "therefore", "meanwhile"). They improve flow but overuse makes prose formulaic.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Sentence Variation:</span> <span class="stat-value" id="stat-sentence-var">0</span><span class="tooltiptext">Standard deviation of sentence lengths. Higher means more varied sentence rhythm. Aim for 5–15 for engaging prose.</span></span>
+        <span class="separator"></span>
+        <span class="stat tooltip"><span class="stat-label">Be-Verb %:</span> <span class="stat-value" id="stat-be-verb-pct">0%</span><span class="tooltiptext">Percentage of words that are be-verbs (is, was, were, etc.). Under 3% is strong writing. Replace with active verbs.</span></span>
     </div>
 
     <div class="legend">
@@ -149,8 +177,11 @@
         <div class="legend-item"><span class="legend-swatch" style="background:#91910f59"></span> Repeated words</div>
         <div class="legend-item"><span class="legend-swatch" style="background:#ED9C9D99"></span> Words to avoid</div>
         <div class="legend-item"><span class="legend-swatch" style="background:#A72BDD99"></span> Overused / trite phrases</div>
-        <div class="legend-item"><span class="legend-swatch" style="background:#A72BDD99"></span> Alternatives suggested</div>
         <div class="legend-item"><span class="legend-swatch" style="background:#E8960099"></span> Adverbs (-ly words)</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#FFD70099"></span> Hedge words</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#20B2AA99"></span> Nominalizations</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#FF69B499"></span> Passive voice</div>
+        <div class="legend-item"><span class="legend-swatch" style="border:2px dashed #333; background:linear-gradient(135deg, #a8c5d899 50%, #E8960099 50%);"></span> Multiple flags</div>
     </div>
 
     <script src="lib/mammoth.browser.min.js"></script>
@@ -184,33 +215,42 @@
             document.getElementById('stat-words').textContent = s.word_count;
             document.getElementById('stat-sentences').textContent = s.sentence_count;
             document.getElementById('stat-paragraphs').textContent = s.paragraph_count;
-            document.getElementById('stat-avg-wps').textContent = s.avg_words_per_sentence.toFixed(2);
+            document.getElementById('stat-avg-wps').textContent = s.avg_words_per_sentence.toFixed(1);
             document.getElementById('stat-complex').textContent = s.complex_words;
             document.getElementById('stat-avg-syl').textContent = s.avg_syllables.toFixed(2);
-            document.getElementById('stat-fog').textContent = s.fog_index.toFixed(2);
+            document.getElementById('stat-fog').textContent = s.fog_index.toFixed(1);
 
             var reEl = document.getElementById('stat-reading-ease');
-            reEl.textContent = s.reading_ease.toFixed(2);
+            reEl.textContent = s.reading_ease.toFixed(1);
             reEl.className = 'stat-value ' + s.reading_ease_class;
 
-            document.getElementById('stat-grade').textContent = s.grade_level.toFixed(2);
+            document.getElementById('stat-grade').textContent = s.grade_level.toFixed(1);
             document.getElementById('stat-overused').textContent = s.overused_phrase_count;
             document.getElementById('stat-avoid').textContent = s.avoid_word_count;
             document.getElementById('stat-repeated').textContent = s.repeated_word_count;
             document.getElementById('stat-reading-time').textContent = s.reading_time_display;
+            document.getElementById('stat-speaking-time').textContent = s.speaking_time_display;
             document.getElementById('stat-chars').textContent = s.char_count;
             document.getElementById('stat-avg-wpp').textContent = s.avg_words_per_paragraph.toFixed(1);
+            document.getElementById('stat-avg-spp').textContent = s.avg_sentences_per_paragraph.toFixed(1);
             document.getElementById('stat-passive').textContent = s.passive_voice_count;
             document.getElementById('stat-adverbs').textContent = s.adverb_count;
+            document.getElementById('stat-hedge').textContent = s.hedge_word_count;
+            document.getElementById('stat-nominalizations').textContent = s.nominalization_count;
+            document.getElementById('stat-weak-openings').textContent = s.weak_opening_count;
+            document.getElementById('stat-cliches').textContent = s.cliche_count;
             document.getElementById('stat-long-sentences').textContent = s.long_sentence_count;
+            document.getElementById('stat-short-sentences').textContent = s.short_sentence_count;
+            document.getElementById('stat-longest-sentence').textContent = s.longest_sentence;
             document.getElementById('stat-repeated-starts').textContent = s.repeated_starts;
             document.getElementById('stat-vocab-diversity').textContent = s.vocabulary_diversity.toFixed(1) + '%';
             document.getElementById('stat-transitions').textContent = s.transition_word_count;
             document.getElementById('stat-sentence-var').textContent = s.sentence_std_dev.toFixed(1);
+            document.getElementById('stat-be-verb-pct').textContent = s.be_verb_pct.toFixed(1) + '%';
         }
 
         function resetStats() {
-            var ids = ['stat-words','stat-sentences','stat-paragraphs','stat-avg-wps','stat-complex','stat-avg-syl','stat-fog','stat-grade','stat-overused','stat-avoid','stat-repeated','stat-chars','stat-avg-wpp','stat-passive','stat-adverbs','stat-long-sentences','stat-repeated-starts','stat-transitions','stat-sentence-var'];
+            var ids = ['stat-words','stat-sentences','stat-paragraphs','stat-avg-wps','stat-complex','stat-avg-syl','stat-fog','stat-grade','stat-overused','stat-avoid','stat-repeated','stat-chars','stat-avg-wpp','stat-avg-spp','stat-passive','stat-adverbs','stat-hedge','stat-nominalizations','stat-weak-openings','stat-cliches','stat-long-sentences','stat-short-sentences','stat-longest-sentence','stat-repeated-starts','stat-transitions','stat-sentence-var'];
             for (var i = 0; i < ids.length; i++) {
                 document.getElementById(ids[i]).textContent = '0';
             }
@@ -218,7 +258,9 @@
             reEl.textContent = '0';
             reEl.className = 'stat-value';
             document.getElementById('stat-reading-time').textContent = '0s';
+            document.getElementById('stat-speaking-time').textContent = '0s';
             document.getElementById('stat-vocab-diversity').textContent = '0%';
+            document.getElementById('stat-be-verb-pct').textContent = '0%';
         }
 
         // Import DOCX

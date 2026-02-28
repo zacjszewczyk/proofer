@@ -21,6 +21,18 @@
 
   var adverb_exceptions = ["only","early","family","holy","lily","fly","apply","supply","reply","rely","comply","imply","multiply","rally","tally","july","italy","daily","weekly","monthly","yearly","friendly","lonely","lovely","likely","lively","deadly","elderly","orderly","costly","ghostly","scholarly","worldly","silly","belly","bully","hilly","jolly","jelly","ally","homily","melancholy"];
 
+  // Hedge words - wishy-washy language that weakens writing
+  var hedge_words = ["might","maybe","perhaps","somewhat","probably","possibly","seems","appeared","appears","tend","tends","roughly","generally","typically","apparently","presumably","supposedly","conceivably","arguably","fairly","seemingly","relatively","largely","mostly","hopefully"];
+
+  // Nominalizations - nouns that could be stronger as verbs
+  var nominalizations = {"utilization":"use","implementation":"implement","establishment":"establish","development":"develop","improvement":"improve","assessment":"assess","management":"manage","achievement":"achieve","requirement":"require","measurement":"measure","involvement":"involve","enhancement":"enhance","encouragement":"encourage","authorization":"authorize","consideration":"consider","determination":"determine","examination":"examine","explanation":"explain","recommendation":"recommend","investigation":"investigate","notification":"notify","observation":"observe","preparation":"prepare","continuation":"continue","elimination":"eliminate","clarification":"clarify","communication":"communicate","demonstration":"demonstrate","documentation":"document","distribution":"distribute","facilitation":"facilitate","presentation":"present","transformation":"transform","conclusion":"conclude","provision":"provide","permission":"allow","submission":"submit","acquisition":"get","assumption":"assume","completion":"finish","collection":"collect","description":"describe","discussion":"discuss","expansion":"expand","expression":"express","introduction":"introduce","production":"produce","protection":"protect","reduction":"reduce","selection":"choose","suggestion":"suggest"};
+
+  // Weak openings regex
+  var weak_opener_re = /^(there\s+(is|are|was|were|have\s+been|has\s+been)|it\s+(is|was|seems|appears))\b/i;
+
+  // Clichés to detect
+  var cliches = ["at the end of the day","think outside the box","low-hanging fruit","back to the drawing board","hit the ground running","get the ball rolling","raise the bar","move the needle","paradigm shift","synergy","circle back","take it to the next level","deep dive","best practice","game changer","win-win","on the same page","push the envelope","break the mold","cutting edge","state of the art","touch base","bottom line","value added","going forward","leverage","bring to the table","drill down","take away","run it up the flagpole","net-net","boil the ocean","peel the onion","open the kimono","at this point in time","when all is said and done","it goes without saying","needless to say","in today's world","each and every","first and foremost","in terms of","with regard to","point in time","due to the fact that","in the event that","for all intents and purposes","by and large","few and far between","in light of","as a matter of fact","for what it's worth","it is what it is","at the present time","in the near future","in the not too distant future"];
+
   // Syllable counting - exact port from Python
   function syllables(word) {
     word = word.toLowerCase();
@@ -220,6 +232,16 @@
     return str.replace(re, replacement);
   }
 
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // Build cliché regexps once
+  var cliche_regexps = [];
+  for (var cri = 0; cri < cliches.length; cri++) {
+    cliche_regexps.push(new RegExp(escapeRegExp(cliches[cri]), 'gi'));
+  }
+
   // Main analyze function
   function analyze(text) {
     var word_count = 0;
@@ -234,9 +256,16 @@
     var adverb_count = 0;
     var passive_voice_count = 0;
     var transition_word_count = 0;
+    var hedge_word_count = 0;
+    var nominalization_count = 0;
+    var weak_opening_count = 0;
+    var cliche_count = 0;
+    var be_verb_count = 0;
     var all_words_set = {};
     var all_sentences = [];
     var sentence_starts = [];
+    var paragraph_sentence_counts = [];
+    var current_para_sentences = 0;
 
     var lines = text.split('\n');
     var htmlLines = [];
@@ -255,7 +284,8 @@
       char_count += text_line.replace(/\s/g, '').length;
 
       // Increment paragraph count for non-empty, non-header lines
-      if (line.length !== 0 && line[0] !== '#') {
+      var is_paragraph = (line.length !== 0 && line[0] !== '#');
+      if (is_paragraph) {
         paragraph_count += 1;
       }
 
@@ -269,9 +299,19 @@
       }
       var unique_tokens = Object.keys(tokens_set);
 
-      // Count syllables, complex words, word count; highlight long words
-      var long_words = [];
-      var adverbs_in_line = [];
+      // Per-word flags: collect all classes and tooltips before highlighting
+      var word_flags = {}; // lowercase -> {word, classes[], tooltip}
+      function addFlag(word, cls, tip) {
+        var key = word.toLowerCase();
+        if (!word_flags[key]) word_flags[key] = {word: word, classes: [], tooltip: ''};
+        if (word_flags[key].classes.indexOf(cls) === -1) word_flags[key].classes.push(cls);
+        if (tip) {
+          if (word_flags[key].tooltip) word_flags[key].tooltip += '; ' + tip;
+          else word_flags[key].tooltip = tip;
+        }
+      }
+
+      // Count syllables, complex words, word count
       for (var wi = 0; wi < tokens.length; wi++) {
         var w = tokens[wi];
         if (!/^[a-zA-Z]+$/.test(w)) continue;
@@ -280,10 +320,7 @@
         syllable_count += sylls;
         if (sylls >= 3) {
           complex_words += 1;
-          if (long_words.indexOf(w) === -1) {
-            html_line = replaceWholeWord(html_line, w, "<span class='long'>" + w + "</span>");
-            long_words.push(w);
-          }
+          addFlag(w, 'long', 'Complex word (' + sylls + ' syllables). Consider a simpler alternative.');
         }
         word_count += 1;
         all_words_set[wl] = true;
@@ -291,25 +328,35 @@
         // Detect adverbs (-ly words)
         if (wl.length > 3 && wl.slice(-2) === 'ly' && adverb_exceptions.indexOf(wl) === -1) {
           adverb_count++;
-          if (long_words.indexOf(w) === -1 && adverbs_in_line.indexOf(wl) === -1) {
-            html_line = replaceWholeWord(html_line, w, "<span class='adverb'>" + w + "</span>");
-            adverbs_in_line.push(wl);
-          }
+          addFlag(w, 'adverb', 'Adverb. Consider removing or using a stronger verb instead.');
+        }
+
+        // Detect hedge words
+        if (hedge_words.indexOf(wl) !== -1) {
+          hedge_word_count++;
+          addFlag(w, 'hedge', 'Hedge word. Consider being more direct and assertive.');
+        }
+
+        // Detect nominalizations
+        if (nominalizations.hasOwnProperty(wl)) {
+          nominalization_count++;
+          addFlag(w, 'nominalization', 'Nominalization. Try the verb form: "' + nominalizations[wl] + '"');
         }
       }
 
-      // Detect passive voice (be_verb + past participle)
+      // Detect passive voice (be_verb + past participle) and highlight
       for (var pvi = 0; pvi < tokens.length - 1; pvi++) {
         var pvw1 = tokens[pvi].toLowerCase();
         var pvw2 = tokens[pvi + 1].toLowerCase();
         if (be_verbs.indexOf(pvw1) !== -1 && pvw2.length > 2) {
           if (pvw2.slice(-2) === 'ed' || pvw2.slice(-2) === 'en' || pvw2.slice(-3) === 'ung' || pvw2.slice(-3) === 'ght') {
             passive_voice_count++;
+            addFlag(tokens[pvi + 1], 'passive', 'Passive voice. Consider rewriting in active voice.');
           }
         }
       }
 
-      // Find duplicates (>2 occurrences in paragraph, excluding exclude+be_verbs)
+      // Find duplicates (>2 occurrences in paragraph, excluding common words)
       for (var ui = 0; ui < unique_tokens.length; ui++) {
         var uw = unique_tokens[ui];
         if (uw.length === 0) continue;
@@ -319,20 +366,67 @@
           if (tokens[ci] === uw) count++;
         }
         if (count > 2) {
-          html_line = replaceWholeWord(html_line, uw, "<span class='dup'>" + uw + "</span>");
+          addFlag(uw, 'dup', 'Repeated ' + count + ' times in this paragraph.');
           repeated_word_count += 1;
         }
       }
 
+      // Classify be verbs, pec words, avoid words, alternate words
+      for (var ei = 0; ei < unique_tokens.length; ei++) {
+        var each = unique_tokens[ei];
+        if (!/^[a-zA-Z]+$/.test(each)) continue;
+        if (exclude.indexOf(each) !== -1) continue;
+        var eachLower = each.toLowerCase();
+
+        if (be_verbs.indexOf(eachLower) !== -1) {
+          avoid_word_count += 1;
+          be_verb_count += 1;
+          addFlag(each, 'avoid', 'Weak verb. Consider using a more descriptive action verb.');
+        } else if (pec.hasOwnProperty(eachLower)) {
+          overused_phrase_count += 1;
+          addFlag(each, 'trite', 'Consider replacing with: ' + pec[eachLower]);
+        } else if (marked_avoid.indexOf(eachLower) !== -1) {
+          avoid_word_count += 1;
+          addFlag(each, 'avoid', 'Weak or filler word. Try removing it or finding a stronger alternative.');
+        } else if (marked_alternate.indexOf(eachLower) !== -1) {
+          overused_phrase_count += 1;
+          addFlag(each, 'alternate', 'Overused phrase. Consider a simpler, more direct alternative.');
+        }
+      }
+
+      // Apply combined highlighting (single span per word with all classes)
+      for (var fk in word_flags) {
+        if (!word_flags.hasOwnProperty(fk)) continue;
+        var f = word_flags[fk];
+        var classes = f.classes.join(' ');
+        if (f.classes.length > 1) classes += ' multi-flag';
+        if (f.tooltip) {
+          html_line = replaceWholeWord(html_line, f.word, "<span class='" + classes + " tooltip'>" + f.word + "<span class='tooltiptext'>" + escapeHtml(f.tooltip) + "</span></span>");
+        } else {
+          html_line = replaceWholeWord(html_line, f.word, "<span class='" + classes + "'>" + f.word + "</span>");
+        }
+      }
+
       // Count sentences
+      var line_sentence_count = 0;
       for (var si = 0; si < text_line.length; si++) {
         var ch = text_line[si];
         if (ch === '.' || ch === ';' || ch === '!' || ch === '?') {
           sentence_count += 1;
+          line_sentence_count += 1;
         }
       }
 
-      // Collect sentence lengths and starting words
+      // Track sentences per paragraph
+      if (is_paragraph && line_sentence_count > 0) {
+        current_para_sentences += line_sentence_count;
+      }
+      if (line.length === 0 && current_para_sentences > 0) {
+        paragraph_sentence_counts.push(current_para_sentences);
+        current_para_sentences = 0;
+      }
+
+      // Collect sentence lengths, starting words, and check for weak openings
       var sentencesInLine = text_line.split(/[.;!?]+/);
       for (var sli = 0; sli < sentencesInLine.length; sli++) {
         var sentText = sentencesInLine[sli].trim();
@@ -341,6 +435,10 @@
         if (sentWords.length > 0) {
           all_sentences.push(sentWords.length);
           sentence_starts.push(sentWords[0].toLowerCase().replace(/[^a-z]/g, ''));
+        }
+        // Detect weak openings
+        if (weak_opener_re.test(sentText)) {
+          weak_opening_count++;
         }
       }
 
@@ -352,29 +450,19 @@
         if (twMatches) transition_word_count += twMatches.length;
       }
 
-      // Highlight be verbs, pec words, avoid words, alternate words
-      for (var ei = 0; ei < unique_tokens.length; ei++) {
-        var each = unique_tokens[ei];
-        if (!/^[a-zA-Z]+$/.test(each)) continue;
-        if (exclude.indexOf(each) !== -1) continue;
-
-        if (be_verbs.indexOf(each) !== -1) {
-          avoid_word_count += 1;
-          var beRe = new RegExp('(\\W)' + escapeRegExp(each) + '(\\W)', 'g');
-          html_line = html_line.replace(beRe, "$1<span class='avoid'>" + each + "</span>$2");
-        } else if (pec.hasOwnProperty(each)) {
-          overused_phrase_count += 1;
-          html_line = replaceWholeWord(html_line, each, "<span class='trite tooltip'>" + each + "<span class='tooltiptext'>Consider replacing with: " + pec[each] + "</span></span>");
-        } else if (marked_avoid.indexOf(each) !== -1) {
-          avoid_word_count += 1;
-          html_line = replaceWholeWord(html_line, each, "<span class='avoid'>" + each + "</span>");
-        } else if (marked_alternate.indexOf(each) !== -1) {
-          overused_phrase_count += 1;
-          html_line = replaceWholeWord(html_line, each, "<span class='alternate'>" + each + "</span>");
-        }
+      // Detect clichés in the line using prebuilt regexps
+      for (var cli = 0; cli < cliche_regexps.length; cli++) {
+        cliche_regexps[cli].lastIndex = 0;
+        var clicheMatches = text_lower.match(cliche_regexps[cli]);
+        if (clicheMatches) cliche_count += clicheMatches.length;
       }
 
       htmlLines.push(html_line);
+    }
+
+    // Flush last paragraph sentence count
+    if (current_para_sentences > 0) {
+      paragraph_sentence_counts.push(current_para_sentences);
     }
 
     // Vocabulary diversity (type-token ratio)
@@ -413,6 +501,37 @@
     var reading_time_min = Math.floor(reading_time_seconds / 60);
     var reading_time_sec = reading_time_seconds % 60;
     var reading_time_display = reading_time_min > 0 ? (reading_time_min + 'm ' + reading_time_sec + 's') : (reading_time_sec + 's');
+
+    // Speaking time (average 150 words per minute)
+    var speaking_time_seconds = word_count > 0 ? Math.ceil(word_count / 150 * 60) : 0;
+    var speaking_time_min = Math.floor(speaking_time_seconds / 60);
+    var speaking_time_sec = speaking_time_seconds % 60;
+    var speaking_time_display = speaking_time_min > 0 ? (speaking_time_min + 'm ' + speaking_time_sec + 's') : (speaking_time_sec + 's');
+
+    // Sentences per paragraph
+    var avg_sentences_per_paragraph = 0;
+    if (paragraph_sentence_counts.length > 0) {
+      var para_sent_sum = 0;
+      for (var psi = 0; psi < paragraph_sentence_counts.length; psi++) {
+        para_sent_sum += paragraph_sentence_counts[psi];
+      }
+      avg_sentences_per_paragraph = para_sent_sum / paragraph_sentence_counts.length;
+    }
+
+    // Longest sentence
+    var longest_sentence = 0;
+    for (var lsi2 = 0; lsi2 < all_sentences.length; lsi2++) {
+      if (all_sentences[lsi2] > longest_sentence) longest_sentence = all_sentences[lsi2];
+    }
+
+    // Short sentences (<5 words) - can indicate choppy writing
+    var short_sentence_count = 0;
+    for (var ssi = 0; ssi < all_sentences.length; ssi++) {
+      if (all_sentences[ssi] < 5 && all_sentences[ssi] > 0) short_sentence_count++;
+    }
+
+    // Be-verb percentage
+    var be_verb_pct = word_count > 0 ? (be_verb_count / word_count * 100) : 0;
 
     // Calculate readability stats (guard against division by zero)
     var fog_index = 0;
@@ -461,7 +580,16 @@
         long_sentence_count: long_sentence_count,
         repeated_starts: repeated_starts,
         sentence_std_dev: sentence_std_dev,
-        reading_time_display: reading_time_display
+        reading_time_display: reading_time_display,
+        speaking_time_display: speaking_time_display,
+        hedge_word_count: hedge_word_count,
+        nominalization_count: nominalization_count,
+        weak_opening_count: weak_opening_count,
+        cliche_count: cliche_count,
+        avg_sentences_per_paragraph: avg_sentences_per_paragraph,
+        longest_sentence: longest_sentence,
+        short_sentence_count: short_sentence_count,
+        be_verb_pct: be_verb_pct
       }
     };
   }
