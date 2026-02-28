@@ -214,6 +214,7 @@
 
     var lines = text.split('\n');
     var htmlLines = [];
+    var skip = exclude.concat(be_verbs);
 
     for (var li = 0; li < lines.length; li++) {
       var line = lines[li].trim();
@@ -257,7 +258,6 @@
       }
 
       // Find duplicates (>2 occurrences in paragraph, excluding exclude+be_verbs)
-      var skip = exclude.concat(be_verbs);
       for (var ui = 0; ui < unique_tokens.length; ui++) {
         var uw = unique_tokens[ui];
         if (uw.length === 0) continue;
@@ -268,6 +268,7 @@
         }
         if (count > 2) {
           html_line = html_line.split(uw).join("<span class='dup'>" + uw + "</span>");
+          repeated_word_count += 1;
         }
       }
 
