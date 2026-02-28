@@ -33,6 +33,49 @@
   // Clichés to detect
   var cliches = ["at the end of the day","think outside the box","low-hanging fruit","back to the drawing board","hit the ground running","get the ball rolling","raise the bar","move the needle","paradigm shift","synergy","circle back","take it to the next level","deep dive","best practice","game changer","win-win","on the same page","push the envelope","break the mold","cutting edge","state of the art","touch base","bottom line","value added","going forward","leverage","bring to the table","drill down","take away","run it up the flagpole","net-net","boil the ocean","peel the onion","open the kimono","at this point in time","when all is said and done","it goes without saying","needless to say","in today's world","each and every","first and foremost","in terms of","with regard to","point in time","due to the fact that","in the event that","for all intents and purposes","by and large","few and far between","in light of","as a matter of fact","for what it's worth","it is what it is","at the present time","in the near future","in the not too distant future"];
 
+  // Vague/weasel words - imprecise language that weakens arguments
+  var vague_words = ["some","many","few","several","various","stuff","things","nice","good","bad","big","small","lot","lots","got","get","gets","getting","went","thing","something","anything","everything","nothing","someone","somehow","sometimes","somewhat","somewhere","kind of","sort of","a bit","a little"];
+
+  // Redundant phrases - where one word already implies the other
+  var redundant_phrases = {"end result":"result","past history":"history","free gift":"gift","advance planning":"planning","final outcome":"outcome","basic fundamentals":"fundamentals","future plans":"plans","added bonus":"bonus","close proximity":"proximity","completely finished":"finished","current trend":"trend","each individual":"each","exact same":"same","general consensus":"consensus","join together":"join","mutual cooperation":"cooperation","new innovation":"innovation","over exaggerate":"exaggerate","past experience":"experience","plan ahead":"plan","reason why":"reason","refer back":"refer","repeat again":"repeat","revert back":"revert","rise up":"rise","still remains":"remains","sum total":"total","true fact":"fact","unexpected surprise":"surprise","usual custom":"custom","brief moment":"moment","collaborate together":"collaborate","completely eliminate":"eliminate","consensus of opinion":"consensus","direct confrontation":"direct","empty space":"space","first began":"began","foreign imports":"imports","hollow tube":"tube","important essentials":"essentials","joint partnership":"partnership","personal opinion":"opinion","possibly might":"might","rough estimate":"estimate","serious danger":"danger","sudden impulse":"impulse","terrible tragedy":"tragedy","totally unique":"unique","very unique":"unique","advance warning":"warning","brief summary":"summary","closed fist":"fist","definite decision":"decision","end product":"product","final completion":"completion","honest truth":"truth"};
+
+  // Prepositions for density tracking
+  var prepositions = ["of","in","to","for","with","on","at","from","by","about","into","through","during","before","after","above","below","between","under","along","within","without","upon","toward","towards","against","among","across","behind","beside","beyond","near","around","throughout","past","until","onto","since","except"];
+
+  // Build multi-word phrase lists and regexps for avoid/alternate/pec
+  var multi_word_avoid = [];
+  var single_word_avoid = [];
+  for (var mai = 0; mai < marked_avoid.length; mai++) {
+    if (marked_avoid[mai].indexOf(' ') !== -1) multi_word_avoid.push(marked_avoid[mai]);
+    else single_word_avoid.push(marked_avoid[mai]);
+  }
+
+  var multi_word_alternate = [];
+  var single_word_alternate = [];
+  for (var mli = 0; mli < marked_alternate.length; mli++) {
+    if (marked_alternate[mli].indexOf(' ') !== -1) multi_word_alternate.push(marked_alternate[mli]);
+    else single_word_alternate.push(marked_alternate[mli]);
+  }
+
+  var multi_word_pec = [];
+  var single_word_pec = {};
+  for (var mpk in pec) {
+    if (!pec.hasOwnProperty(mpk)) continue;
+    if (mpk.indexOf(' ') !== -1) multi_word_pec.push(mpk);
+    else single_word_pec[mpk] = pec[mpk];
+  }
+
+  // Build regexps for multi-word vague phrases
+  var multi_word_vague = [];
+  var single_word_vague = [];
+  for (var vwi = 0; vwi < vague_words.length; vwi++) {
+    if (vague_words[vwi].indexOf(' ') !== -1) multi_word_vague.push(vague_words[vwi]);
+    else single_word_vague.push(vague_words[vwi]);
+  }
+
+  // Build redundant phrase regexps
+  var redundant_keys = Object.keys(redundant_phrases);
+
   // Syllable counting - exact port from Python
   function syllables(word) {
     word = word.toLowerCase();
@@ -266,6 +309,9 @@
     var sentence_starts = [];
     var paragraph_sentence_counts = [];
     var current_para_sentences = 0;
+    var vague_word_count = 0;
+    var redundant_phrase_count = 0;
+    var preposition_count = 0;
 
     var lines = text.split('\n');
     var htmlLines = [];
@@ -371,7 +417,87 @@
         }
       }
 
-      // Classify be verbs, pec words, avoid words, alternate words
+      // Detect multi-word phrases in the line text (clichés, avoid, alternate, PEC, vague, redundant)
+      var text_lower_for_phrases = text_line.toLowerCase();
+
+      // Cliché multi-word highlighting
+      for (var cmwi = 0; cmwi < cliches.length; cmwi++) {
+        var cliche_phrase = cliches[cmwi];
+        var cliche_re = new RegExp(escapeRegExp(cliche_phrase), 'gi');
+        var cliche_match;
+        while ((cliche_match = cliche_re.exec(text_line)) !== null) {
+          var matched_text = cliche_match[0];
+          var cliche_span = "<span class='trite tooltip'>" + escapeHtml(matched_text) + "<span class='tooltiptext'>Cliché. Replace with more original, specific language.</span></span>";
+          html_line = html_line.replace(new RegExp(escapeRegExp(matched_text), 'i'), cliche_span);
+        }
+      }
+
+      // Multi-word avoid phrases
+      for (var mwai = 0; mwai < multi_word_avoid.length; mwai++) {
+        var avoid_phrase = multi_word_avoid[mwai];
+        var avoid_re = new RegExp(escapeRegExp(avoid_phrase), 'gi');
+        var avoid_match;
+        while ((avoid_match = avoid_re.exec(text_line)) !== null) {
+          var av_text = avoid_match[0];
+          avoid_word_count++;
+          var av_span = "<span class='avoid tooltip'>" + escapeHtml(av_text) + "<span class='tooltiptext'>Weak or filler phrase. Try removing it or finding a stronger alternative.</span></span>";
+          html_line = html_line.replace(new RegExp(escapeRegExp(av_text), 'i'), av_span);
+        }
+      }
+
+      // Multi-word alternate phrases
+      for (var mwli = 0; mwli < multi_word_alternate.length; mwli++) {
+        var alt_phrase = multi_word_alternate[mwli];
+        var alt_re = new RegExp(escapeRegExp(alt_phrase), 'gi');
+        var alt_match;
+        while ((alt_match = alt_re.exec(text_line)) !== null) {
+          var alt_text = alt_match[0];
+          overused_phrase_count++;
+          var alt_span = "<span class='alternate tooltip'>" + escapeHtml(alt_text) + "<span class='tooltiptext'>Overused phrase. Consider a simpler, more direct alternative.</span></span>";
+          html_line = html_line.replace(new RegExp(escapeRegExp(alt_text), 'i'), alt_span);
+        }
+      }
+
+      // Multi-word PEC phrases
+      for (var mpki = 0; mpki < multi_word_pec.length; mpki++) {
+        var pec_phrase = multi_word_pec[mpki];
+        var pec_re = new RegExp(escapeRegExp(pec_phrase), 'gi');
+        var pec_match;
+        while ((pec_match = pec_re.exec(text_line)) !== null) {
+          var pec_text = pec_match[0];
+          overused_phrase_count++;
+          var pec_span = "<span class='trite tooltip'>" + escapeHtml(pec_text) + "<span class='tooltiptext'>Consider replacing with: " + escapeHtml(pec[pec_phrase]) + "</span></span>";
+          html_line = html_line.replace(new RegExp(escapeRegExp(pec_text), 'i'), pec_span);
+        }
+      }
+
+      // Multi-word vague phrases ("kind of", "sort of", "a bit", "a little")
+      for (var mvwi = 0; mvwi < multi_word_vague.length; mvwi++) {
+        var vague_phrase = multi_word_vague[mvwi];
+        var vague_re = new RegExp('\\b' + escapeRegExp(vague_phrase) + '\\b', 'gi');
+        var vague_match;
+        while ((vague_match = vague_re.exec(text_line)) !== null) {
+          var vague_text = vague_match[0];
+          vague_word_count++;
+          var vague_span = "<span class='vague tooltip'>" + escapeHtml(vague_text) + "<span class='tooltiptext'>Vague language. Be more specific and precise.</span></span>";
+          html_line = html_line.replace(new RegExp(escapeRegExp(vague_text), 'i'), vague_span);
+        }
+      }
+
+      // Redundant phrases
+      for (var rpi = 0; rpi < redundant_keys.length; rpi++) {
+        var red_phrase = redundant_keys[rpi];
+        var red_re = new RegExp('\\b' + escapeRegExp(red_phrase) + '\\b', 'gi');
+        var red_match;
+        while ((red_match = red_re.exec(text_line)) !== null) {
+          var red_text = red_match[0];
+          redundant_phrase_count++;
+          var red_span = "<span class='redundant tooltip'>" + escapeHtml(red_text) + "<span class='tooltiptext'>Redundant. Use \"" + escapeHtml(redundant_phrases[red_phrase]) + "\" instead.</span></span>";
+          html_line = html_line.replace(new RegExp(escapeRegExp(red_text), 'i'), red_span);
+        }
+      }
+
+      // Classify be verbs, pec words, avoid words, alternate words, vague words
       for (var ei = 0; ei < unique_tokens.length; ei++) {
         var each = unique_tokens[ei];
         if (!/^[a-zA-Z]+$/.test(each)) continue;
@@ -382,16 +508,28 @@
           avoid_word_count += 1;
           be_verb_count += 1;
           addFlag(each, 'avoid', 'Weak verb. Consider using a more descriptive action verb.');
-        } else if (pec.hasOwnProperty(eachLower)) {
+        } else if (single_word_pec.hasOwnProperty(eachLower)) {
           overused_phrase_count += 1;
-          addFlag(each, 'trite', 'Consider replacing with: ' + pec[eachLower]);
-        } else if (marked_avoid.indexOf(eachLower) !== -1) {
+          addFlag(each, 'trite', 'Consider replacing with: ' + single_word_pec[eachLower]);
+        } else if (single_word_avoid.indexOf(eachLower) !== -1) {
           avoid_word_count += 1;
           addFlag(each, 'avoid', 'Weak or filler word. Try removing it or finding a stronger alternative.');
-        } else if (marked_alternate.indexOf(eachLower) !== -1) {
+        } else if (single_word_alternate.indexOf(eachLower) !== -1) {
           overused_phrase_count += 1;
           addFlag(each, 'alternate', 'Overused phrase. Consider a simpler, more direct alternative.');
         }
+
+        // Detect single-word vague/weasel words
+        if (single_word_vague.indexOf(eachLower) !== -1) {
+          vague_word_count++;
+          addFlag(each, 'vague', 'Vague or imprecise word. Be more specific.');
+        }
+      }
+
+      // Count prepositions
+      for (var pri = 0; pri < tokens.length; pri++) {
+        var pw = tokens[pri].toLowerCase();
+        if (prepositions.indexOf(pw) !== -1) preposition_count++;
       }
 
       // Apply combined highlighting (single span per word with all classes)
@@ -399,11 +537,15 @@
         if (!word_flags.hasOwnProperty(fk)) continue;
         var f = word_flags[fk];
         var classes = f.classes.join(' ');
-        if (f.classes.length > 1) classes += ' multi-flag';
+        var badge_html = '';
+        if (f.classes.length > 1) {
+          classes += ' multi-flag';
+          badge_html = '<span class="flag-count">' + f.classes.length + '</span>';
+        }
         if (f.tooltip) {
-          html_line = replaceWholeWord(html_line, f.word, "<span class='" + classes + " tooltip'>" + f.word + "<span class='tooltiptext'>" + escapeHtml(f.tooltip) + "</span></span>");
+          html_line = replaceWholeWord(html_line, f.word, "<span class='" + classes + " tooltip'>" + f.word + badge_html + "<span class='tooltiptext'>" + escapeHtml(f.tooltip) + "</span></span>");
         } else {
-          html_line = replaceWholeWord(html_line, f.word, "<span class='" + classes + "'>" + f.word + "</span>");
+          html_line = replaceWholeWord(html_line, f.word, "<span class='" + classes + "'>" + f.word + badge_html + "</span>");
         }
       }
 
@@ -533,6 +675,18 @@
     // Be-verb percentage
     var be_verb_pct = word_count > 0 ? (be_verb_count / word_count * 100) : 0;
 
+    // Preposition density
+    var preposition_density = word_count > 0 ? (preposition_count / word_count * 100) : 0;
+
+    // Writing strength score (0-100, higher is better)
+    // Scale factor 500: at 20% issue density the score reaches 0
+    var total_issues = avoid_word_count + overused_phrase_count
+        + adverb_count + hedge_word_count + nominalization_count
+        + passive_voice_count + weak_opening_count + cliche_count
+        + long_sentence_count + repeated_starts
+        + vague_word_count + redundant_phrase_count;
+    var writing_strength = word_count > 0 ? Math.max(0, Math.min(100, 100 - (total_issues / word_count * 500))) : 0;
+
     // Calculate readability stats (guard against division by zero)
     var fog_index = 0;
     var reading_ease = 0;
@@ -589,7 +743,12 @@
         avg_sentences_per_paragraph: avg_sentences_per_paragraph,
         longest_sentence: longest_sentence,
         short_sentence_count: short_sentence_count,
-        be_verb_pct: be_verb_pct
+        be_verb_pct: be_verb_pct,
+        vague_word_count: vague_word_count,
+        redundant_phrase_count: redundant_phrase_count,
+        preposition_density: preposition_density,
+        writing_strength: writing_strength,
+        sentence_lengths: all_sentences
       }
     };
   }
