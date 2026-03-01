@@ -285,8 +285,14 @@
     cliche_regexps.push(new RegExp(escapeRegExp(cliches[cri]), 'gi'));
   }
 
+  function isHighlightEnabled(options, className) {
+    if (!options || !options.enabledHighlights) return true;
+    if (!options.enabledHighlights.hasOwnProperty(className)) return true;
+    return !!options.enabledHighlights[className];
+  }
+
   // Main analyze function
-  function analyze(text) {
+  function analyze(text, options) {
     var word_count = 0;
     var sentence_count = 0;
     var paragraph_count = 0;
@@ -348,6 +354,7 @@
       // Per-word flags: collect all classes and tooltips before highlighting
       var word_flags = {}; // lowercase -> {word, classes[], tooltip}
       function addFlag(word, cls, tip) {
+        if (!isHighlightEnabled(options, cls)) return;
         var key = word.toLowerCase();
         if (!word_flags[key]) word_flags[key] = {word: word, classes: [], tooltip: ''};
         if (word_flags[key].classes.indexOf(cls) === -1) word_flags[key].classes.push(cls);
@@ -427,8 +434,10 @@
         var cliche_match;
         while ((cliche_match = cliche_re.exec(text_line)) !== null) {
           var matched_text = cliche_match[0];
-          var cliche_span = "<span class='trite tooltip'>" + escapeHtml(matched_text) + "<span class='tooltiptext'>Cliché. Replace with more original, specific language.</span></span>";
-          html_line = html_line.replace(new RegExp(escapeRegExp(matched_text), 'i'), cliche_span);
+          if (isHighlightEnabled(options, 'trite')) {
+            var cliche_span = "<span class='trite tooltip'>" + escapeHtml(matched_text) + "<span class='tooltiptext'>Cliché. Replace with more original, specific language.</span></span>";
+            html_line = html_line.replace(new RegExp(escapeRegExp(matched_text), 'i'), cliche_span);
+          }
         }
       }
 
@@ -440,8 +449,10 @@
         while ((avoid_match = avoid_re.exec(text_line)) !== null) {
           var av_text = avoid_match[0];
           avoid_word_count++;
-          var av_span = "<span class='avoid tooltip'>" + escapeHtml(av_text) + "<span class='tooltiptext'>Weak or filler phrase. Try removing it or finding a stronger alternative.</span></span>";
-          html_line = html_line.replace(new RegExp(escapeRegExp(av_text), 'i'), av_span);
+          if (isHighlightEnabled(options, 'avoid')) {
+            var av_span = "<span class='avoid tooltip'>" + escapeHtml(av_text) + "<span class='tooltiptext'>Weak or filler phrase. Try removing it or finding a stronger alternative.</span></span>";
+            html_line = html_line.replace(new RegExp(escapeRegExp(av_text), 'i'), av_span);
+          }
         }
       }
 
@@ -453,8 +464,10 @@
         while ((alt_match = alt_re.exec(text_line)) !== null) {
           var alt_text = alt_match[0];
           overused_phrase_count++;
-          var alt_span = "<span class='alternate tooltip'>" + escapeHtml(alt_text) + "<span class='tooltiptext'>Overused phrase. Consider a simpler, more direct alternative.</span></span>";
-          html_line = html_line.replace(new RegExp(escapeRegExp(alt_text), 'i'), alt_span);
+          if (isHighlightEnabled(options, 'alternate')) {
+            var alt_span = "<span class='alternate tooltip'>" + escapeHtml(alt_text) + "<span class='tooltiptext'>Overused phrase. Consider a simpler, more direct alternative.</span></span>";
+            html_line = html_line.replace(new RegExp(escapeRegExp(alt_text), 'i'), alt_span);
+          }
         }
       }
 
@@ -466,8 +479,10 @@
         while ((pec_match = pec_re.exec(text_line)) !== null) {
           var pec_text = pec_match[0];
           overused_phrase_count++;
-          var pec_span = "<span class='trite tooltip'>" + escapeHtml(pec_text) + "<span class='tooltiptext'>Consider replacing with: " + escapeHtml(pec[pec_phrase]) + "</span></span>";
-          html_line = html_line.replace(new RegExp(escapeRegExp(pec_text), 'i'), pec_span);
+          if (isHighlightEnabled(options, 'trite')) {
+            var pec_span = "<span class='trite tooltip'>" + escapeHtml(pec_text) + "<span class='tooltiptext'>Consider replacing with: " + escapeHtml(pec[pec_phrase]) + "</span></span>";
+            html_line = html_line.replace(new RegExp(escapeRegExp(pec_text), 'i'), pec_span);
+          }
         }
       }
 
@@ -479,8 +494,10 @@
         while ((vague_match = vague_re.exec(text_line)) !== null) {
           var vague_text = vague_match[0];
           vague_word_count++;
-          var vague_span = "<span class='vague tooltip'>" + escapeHtml(vague_text) + "<span class='tooltiptext'>Vague language. Be more specific and precise.</span></span>";
-          html_line = html_line.replace(new RegExp(escapeRegExp(vague_text), 'i'), vague_span);
+          if (isHighlightEnabled(options, 'vague')) {
+            var vague_span = "<span class='vague tooltip'>" + escapeHtml(vague_text) + "<span class='tooltiptext'>Vague language. Be more specific and precise.</span></span>";
+            html_line = html_line.replace(new RegExp(escapeRegExp(vague_text), 'i'), vague_span);
+          }
         }
       }
 
@@ -492,8 +509,10 @@
         while ((red_match = red_re.exec(text_line)) !== null) {
           var red_text = red_match[0];
           redundant_phrase_count++;
-          var red_span = "<span class='redundant tooltip'>" + escapeHtml(red_text) + "<span class='tooltiptext'>Redundant. Use \"" + escapeHtml(redundant_phrases[red_phrase]) + "\" instead.</span></span>";
-          html_line = html_line.replace(new RegExp(escapeRegExp(red_text), 'i'), red_span);
+          if (isHighlightEnabled(options, 'redundant')) {
+            var red_span = "<span class='redundant tooltip'>" + escapeHtml(red_text) + "<span class='tooltiptext'>Redundant. Use \"" + escapeHtml(redundant_phrases[red_phrase]) + "\" instead.</span></span>";
+            html_line = html_line.replace(new RegExp(escapeRegExp(red_text), 'i'), red_span);
+          }
         }
       }
 
