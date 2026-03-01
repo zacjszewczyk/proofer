@@ -38,6 +38,10 @@
         .legend-item { display: flex; align-items: center; gap: 0.3rem; }
         .legend-swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
 
+        .highlight-filters { padding: 0.6rem 1.5rem; background: #f8f8f8; border-top: 1px solid #ddd; display: flex; flex-wrap: wrap; gap: 0.9rem 1.25rem; font-size: 0.82rem; }
+        .filter-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+        .filter-item input { margin: 0; }
+
         /* Highlight classes - matching original Proofer CSS */
         .avoid { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #ED9C9D99; }
         .alternate, .trite { padding: 1pt 0.25em; border-radius: 0.25em; background-color: #A72BDD99; }
@@ -218,6 +222,20 @@
         <span class="stat tooltip"><span class="stat-label">Strength:</span> <span class="stat-value strength-meter" id="stat-strength"><span class="strength-bar-bg"><span class="strength-bar-fill" id="strength-fill" style="width:0%;background:#999"></span></span> <span id="strength-num">0</span></span><span class="tooltiptext">Writing Strength Score (0–100). Combines all issue counts relative to word count. Higher is cleaner, stronger writing.</span></span>
     </div>
 
+    <div class="highlight-filters" id="highlight-filters">
+        <label class="filter-item"><input type="checkbox" data-highlight="long" checked> Complex words</label>
+        <label class="filter-item"><input type="checkbox" data-highlight="dup" checked> Repeated words</label>
+        <label class="filter-item"><input type="checkbox" data-highlight="avoid" checked> Words to avoid</label>
+        <label class="filter-item"><input type="checkbox" data-highlight="alternate" checked> Overused phrases</label>
+        <label class="filter-item"><input type="checkbox" data-highlight="trite" checked> Trite / clichéd</label>
+        <label class="filter-item"><input type="checkbox" data-highlight="adverb" checked> Adverbs</label>
+        <label class="filter-item"><input type="checkbox" data-highlight="hedge" checked> Hedge words</label>
+        <label class="filter-item"><input type="checkbox" data-highlight="nominalization" checked> Nominalizations</label>
+        <label class="filter-item"><input type="checkbox" data-highlight="passive" checked> Passive voice</label>
+        <label class="filter-item"><input type="checkbox" data-highlight="vague" checked> Vague words</label>
+        <label class="filter-item"><input type="checkbox" data-highlight="redundant" checked> Redundant phrases</label>
+    </div>
+
     <div class="legend">
         <div class="legend-item"><span class="legend-swatch" style="background:#a8c5d899"></span> Complex (3+ syllables)</div>
         <div class="legend-item"><span class="legend-swatch" style="background:#91910f59"></span> Repeated words</div>
@@ -244,13 +262,26 @@
         var source = document.getElementById('source');
         var preview = document.getElementById('preview');
         var fileInput = document.getElementById('file-input');
+        var filterInputs = Array.prototype.slice.call(document.querySelectorAll('[data-highlight]'));
         var debounceTimer = null;
+
+        function getHighlightOptions() {
+            var enabledHighlights = {};
+            for (var i = 0; i < filterInputs.length; i++) {
+                enabledHighlights[filterInputs[i].getAttribute('data-highlight')] = filterInputs[i].checked;
+            }
+            return { enabledHighlights: enabledHighlights };
+        }
 
         // Debounced analysis
         source.addEventListener('input', function() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(runAnalysis, 500);
         });
+
+        for (var fi = 0; fi < filterInputs.length; fi++) {
+            filterInputs[fi].addEventListener('change', runAnalysis);
+        }
 
         function runAnalysis() {
             var text = source.value;
@@ -259,7 +290,7 @@
                 resetStats();
                 return;
             }
-            var result = Proofer.analyze(text);
+            var result = Proofer.analyze(text, getHighlightOptions());
             preview.innerHTML = result.html;
             updateStats(result.stats);
         }
