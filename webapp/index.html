@@ -109,15 +109,26 @@
         .preview pre, .preview code { background: #f1f1f1; font-family: "Courier New", monospace; border-radius: 4px; padding: 2px 4px; }
         .preview pre { padding: 1em; overflow-x: auto; }
 
+        /* Toggle switch */
+        .toggle-label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; cursor: pointer; color: white; user-select: none; }
+        .toggle-label input[type="checkbox"] { display: none; }
+        .toggle-track { width: 34px; height: 18px; background: rgba(255,255,255,0.25); border-radius: 9px; position: relative; transition: background 0.2s; }
+        .toggle-track::after { content: ''; position: absolute; left: 2px; top: 2px; width: 14px; height: 14px; background: white; border-radius: 50%; transition: left 0.2s; }
+        .toggle-label input:checked + .toggle-track { background: rgba(255,255,255,0.6); }
+        .toggle-label input:checked + .toggle-track::after { left: 18px; }
+
         /* Sentence rhythm chart */
         .rhythm-container { padding: 0.5rem 1.5rem; background: #f8f8f8; border-top: 1px solid #ddd; }
         .rhythm-label { font-size: 0.8rem; font-weight: 600; color: #555; margin-bottom: 0.3rem; }
-        .rhythm-chart { display: flex; align-items: flex-end; gap: 2px; height: 40px; }
-        .rhythm-bar { flex: 1; min-width: 3px; max-width: 12px; border-radius: 2px 2px 0 0; transition: height 0.3s; }
+        .rhythm-chart { display: flex; align-items: flex-end; gap: 2px; height: 40px; position: relative; }
+        .rhythm-bar { flex: 1; min-width: 3px; max-width: 12px; border-radius: 2px 2px 0 0; transition: height 0.3s; cursor: default; position: relative; }
         .rhythm-bar.short-sent { background: #73A41E; }
         .rhythm-bar.normal-sent { background: #5FAD14; }
         .rhythm-bar.long-sent { background: #D77751; }
         .rhythm-bar.very-long-sent { background: #FF6666; }
+        .rhythm-bar:hover { opacity: 0.8; }
+        .rhythm-bar .bar-tip { visibility: hidden; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #333; color: white; font-size: 0.75rem; padding: 5px 8px; border-radius: 5px; white-space: normal; width: max-content; max-width: 260px; line-height: 1.4; z-index: 20; box-shadow: 0 2px 8px rgba(0,0,0,0.25); pointer-events: none; word-break: break-word; }
+        .rhythm-bar:hover .bar-tip { visibility: visible; }
 
         /* Writing strength meter */
         .strength-meter { display: flex; align-items: center; gap: 0.5rem; }
@@ -128,6 +139,11 @@
 <body>
     <header>
         <h1>📝 Proofer</h1>
+        <label class="toggle-label" title="Show or hide the source editor panel">
+            <input type="checkbox" id="toggle-source" checked>
+            <span class="toggle-track"></span>
+            Show Source
+        </label>
         <div class="actions">
             <button id="btn-import">Import DOCX</button>
             <button id="btn-export-md">Export Markdown</button>
@@ -138,7 +154,7 @@
     </header>
 
     <div class="editor-container">
-        <div class="panel">
+        <div class="panel" id="source-panel">
             <div class="panel-header">Source (Markdown)</div>
             <textarea id="source" placeholder="Paste or type your Markdown text here..."></textarea>
         </div>
@@ -265,12 +281,23 @@
         var filterInputs = Array.prototype.slice.call(document.querySelectorAll('[data-highlight]'));
         var debounceTimer = null;
 
+        // Toggle source panel visibility
+        var toggleSource = document.getElementById('toggle-source');
+        var sourcePanel = document.getElementById('source-panel');
+        toggleSource.addEventListener('change', function() {
+            sourcePanel.style.display = this.checked ? '' : 'none';
+        });
+
         function getHighlightOptions() {
             var enabledHighlights = {};
             for (var i = 0; i < filterInputs.length; i++) {
                 enabledHighlights[filterInputs[i].getAttribute('data-highlight')] = filterInputs[i].checked;
             }
             return { enabledHighlights: enabledHighlights };
+        }
+
+        function escHtml(str) {
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
 
         // Debounced analysis
@@ -357,7 +384,9 @@
                     var sl = s.sentence_lengths[ri];
                     var barH = maxLen > 0 ? Math.max(2, Math.round(sl / maxLen * 36)) : 2;
                     var barClass = sl < 5 ? 'short-sent' : sl <= 25 ? 'normal-sent' : sl <= 40 ? 'long-sent' : 'very-long-sent'; // <5 short, 5-25 normal, 26-40 long, >40 very long
-                    bars += '<div class="rhythm-bar ' + barClass + '" style="height:' + barH + 'px" title="Sentence ' + (ri+1) + ': ' + sl + ' words"></div>';
+                    var sentTip = s.sentence_texts && s.sentence_texts[ri] ? s.sentence_texts[ri] : '';
+                    var tipHtml = sentTip ? '<span class="bar-tip">' + escHtml(sentTip) + '</span>' : '';
+                    bars += '<div class="rhythm-bar ' + barClass + '" style="height:' + barH + 'px">' + tipHtml + '</div>';
                 }
                 rhythmChart.innerHTML = bars;
             } else {
