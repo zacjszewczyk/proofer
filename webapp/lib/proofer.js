@@ -312,6 +312,7 @@
     var be_verb_count = 0;
     var all_words_set = {};
     var all_sentences = [];
+    var all_sentence_texts = [];
     var sentence_starts = [];
     var paragraph_sentence_counts = [];
     var current_para_sentences = 0;
@@ -595,6 +596,7 @@
         var sentWords = sentText.split(/\s+/).filter(function(sw) { return sw.length > 0; });
         if (sentWords.length > 0) {
           all_sentences.push(sentWords.length);
+          all_sentence_texts.push(sentText);
           sentence_starts.push(sentWords[0].toLowerCase().replace(/[^a-z]/g, ''));
         }
         // Detect weak openings
@@ -767,7 +769,8 @@
         redundant_phrase_count: redundant_phrase_count,
         preposition_density: preposition_density,
         writing_strength: writing_strength,
-        sentence_lengths: all_sentences
+        sentence_lengths: all_sentences,
+        sentence_texts: all_sentence_texts
       }
     };
   }
