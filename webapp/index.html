@@ -130,6 +130,12 @@
         .rhythm-bar .bar-tip { visibility: hidden; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #333; color: white; font-size: 0.75rem; padding: 5px 8px; border-radius: 5px; white-space: normal; width: max-content; max-width: 260px; line-height: 1.4; z-index: 20; box-shadow: 0 2px 8px rgba(0,0,0,0.25); pointer-events: none; word-break: break-word; }
         .rhythm-bar:hover .bar-tip { visibility: visible; }
 
+        /* Complexity rhythm chart */
+        .complexity-bar.low-complex { background: #73A41E; }
+        .complexity-bar.mid-complex { background: #D77751; }
+        .complexity-bar.high-complex { background: #FF6666; }
+        .complexity-bar.no-complex { background: #aaa; }
+
         /* Writing strength meter */
         .strength-meter { display: flex; align-items: center; gap: 0.5rem; }
         .strength-bar-bg { width: 80px; height: 10px; background: #444; border-radius: 5px; overflow: hidden; }
@@ -143,6 +149,16 @@
             <input type="checkbox" id="toggle-source" checked>
             <span class="toggle-track"></span>
             Show Source
+        </label>
+        <label class="toggle-label" title="Show or hide the sentence rhythm chart">
+            <input type="checkbox" id="toggle-sentence-rhythm" checked>
+            <span class="toggle-track"></span>
+            Sentence Rhythm
+        </label>
+        <label class="toggle-label" title="Show or hide the complexity rhythm chart">
+            <input type="checkbox" id="toggle-complexity-rhythm" checked>
+            <span class="toggle-track"></span>
+            Complexity Rhythm
         </label>
         <div class="actions">
             <button id="btn-import">Import DOCX</button>
@@ -271,6 +287,11 @@
         <div class="rhythm-chart" id="rhythm-chart"></div>
     </div>
 
+    <div class="rhythm-container" id="complexity-container" style="display:none">
+        <div class="rhythm-label">Complexity Rhythm <span style="font-weight:400;opacity:0.7">(bar height = complex words per paragraph)</span></div>
+        <div class="rhythm-chart" id="complexity-chart"></div>
+    </div>
+
     <script src="lib/mammoth.browser.min.js"></script>
     <script src="lib/proofer.js"></script>
     <script>
@@ -286,6 +307,32 @@
         var sourcePanel = document.getElementById('source-panel');
         toggleSource.addEventListener('change', function() {
             sourcePanel.style.display = this.checked ? '' : 'none';
+        });
+
+        // Toggle sentence rhythm chart
+        var toggleSentenceRhythm = document.getElementById('toggle-sentence-rhythm');
+        toggleSentenceRhythm.addEventListener('change', function() {
+            var rc = document.getElementById('rhythm-container');
+            if (!this.checked) {
+                rc.style.display = 'none';
+            } else if (document.getElementById('rhythm-chart').innerHTML.trim()) {
+                rc.style.display = '';
+            } else {
+                runAnalysis();
+            }
+        });
+
+        // Toggle complexity rhythm chart
+        var toggleComplexityRhythm = document.getElementById('toggle-complexity-rhythm');
+        toggleComplexityRhythm.addEventListener('change', function() {
+            var cc = document.getElementById('complexity-container');
+            if (!this.checked) {
+                cc.style.display = 'none';
+            } else if (document.getElementById('complexity-chart').innerHTML.trim()) {
+                cc.style.display = '';
+            } else {
+                runAnalysis();
+            }
         });
 
         function getHighlightOptions() {
@@ -376,7 +423,7 @@
             // Sentence rhythm chart
             var rhythmContainer = document.getElementById('rhythm-container');
             var rhythmChart = document.getElementById('rhythm-chart');
-            if (s.sentence_lengths && s.sentence_lengths.length > 0) {
+            if (s.sentence_lengths && s.sentence_lengths.length > 0 && document.getElementById('toggle-sentence-rhythm').checked) {
                 rhythmContainer.style.display = '';
                 var maxLen = Math.max.apply(null, s.sentence_lengths);
                 var bars = '';
@@ -392,6 +439,26 @@
             } else {
                 rhythmContainer.style.display = 'none';
                 rhythmChart.innerHTML = '';
+            }
+
+            // Complexity rhythm chart
+            var complexityContainer = document.getElementById('complexity-container');
+            var complexityChart = document.getElementById('complexity-chart');
+            if (s.paragraph_complex_words && s.paragraph_complex_words.length > 0 && document.getElementById('toggle-complexity-rhythm').checked) {
+                complexityContainer.style.display = '';
+                var maxComplex = Math.max.apply(null, s.paragraph_complex_words);
+                var cbars = '';
+                for (var ci = 0; ci < s.paragraph_complex_words.length; ci++) {
+                    var cw = s.paragraph_complex_words[ci];
+                    var cbarH = maxComplex > 0 ? Math.max(2, Math.round(cw / maxComplex * 36)) : 2;
+                    var cbarClass = cw === 0 ? 'no-complex' : cw <= 3 ? 'low-complex' : cw <= 7 ? 'mid-complex' : 'high-complex';
+                    var cTip = '<span class="bar-tip">Paragraph ' + (ci + 1) + ': ' + cw + ' complex word' + (cw === 1 ? '' : 's') + '</span>';
+                    cbars += '<div class="rhythm-bar complexity-bar ' + cbarClass + '" style="height:' + cbarH + 'px">' + cTip + '</div>';
+                }
+                complexityChart.innerHTML = cbars;
+            } else {
+                complexityContainer.style.display = 'none';
+                complexityChart.innerHTML = '';
             }
         }
 
@@ -412,6 +479,8 @@
             document.getElementById('strength-fill').style.width = '0%';
             document.getElementById('rhythm-container').style.display = 'none';
             document.getElementById('rhythm-chart').innerHTML = '';
+            document.getElementById('complexity-container').style.display = 'none';
+            document.getElementById('complexity-chart').innerHTML = '';
         }
 
         // Import DOCX

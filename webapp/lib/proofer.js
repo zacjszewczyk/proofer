@@ -316,6 +316,9 @@
     var sentence_starts = [];
     var paragraph_sentence_counts = [];
     var current_para_sentences = 0;
+    var paragraph_complex_words = [];
+    var current_para_complex = 0;
+    var current_para_had_content = false;
     var vague_word_count = 0;
     var redundant_phrase_count = 0;
     var preposition_count = 0;
@@ -374,6 +377,7 @@
         syllable_count += sylls;
         if (sylls >= 3) {
           complex_words += 1;
+          current_para_complex += 1;
           addFlag(w, 'long', 'Complex word (' + sylls + ' syllables). Consider a simpler alternative.');
         }
         word_count += 1;
@@ -583,9 +587,17 @@
       if (is_paragraph && line_sentence_count > 0) {
         current_para_sentences += line_sentence_count;
       }
+      if (is_paragraph) {
+        current_para_had_content = true;
+      }
       if (line.length === 0 && current_para_sentences > 0) {
         paragraph_sentence_counts.push(current_para_sentences);
         current_para_sentences = 0;
+      }
+      if (line.length === 0 && current_para_had_content) {
+        paragraph_complex_words.push(current_para_complex);
+        current_para_complex = 0;
+        current_para_had_content = false;
       }
 
       // Collect sentence lengths, starting words, and check for weak openings
@@ -626,6 +638,11 @@
     // Flush last paragraph sentence count
     if (current_para_sentences > 0) {
       paragraph_sentence_counts.push(current_para_sentences);
+    }
+
+    // Flush last paragraph complex word count
+    if (current_para_had_content) {
+      paragraph_complex_words.push(current_para_complex);
     }
 
     // Vocabulary diversity (type-token ratio)
@@ -770,7 +787,8 @@
         preposition_density: preposition_density,
         writing_strength: writing_strength,
         sentence_lengths: all_sentences,
-        sentence_texts: all_sentence_texts
+        sentence_texts: all_sentence_texts,
+        paragraph_complex_words: paragraph_complex_words
       }
     };
   }
